@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/SettingsPage.dart'; // Import the settings page file
+import 'pages/ResourcesPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -110,6 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           icon: const Icon(Icons.now_widgets, size: 50, color: Colors.white),
                           onPressed: () {
                             // Action for Breathing exercise
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ResourcesPage(),
+                              ),
+                            );
                           },
                         ),
                         const Text(

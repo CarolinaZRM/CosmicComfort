@@ -247,19 +247,19 @@ class _SettingsPageState extends State<SettingsPage> {
               tilePadding: EdgeInsets.zero,
               title: Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 0, 0, 0),
                 ),
               ),
-              trailing: Icon(Icons.arrow_drop_down),
+              trailing: const Icon(Icons.arrow_drop_down),
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: SingleChildScrollView(
                     child: Text(
                       disclaimerText,
-                      style: TextStyle(color: Colors.black87),
+                      style: const TextStyle(color: Colors.black87),
                     ),
                   ),
                 ),
