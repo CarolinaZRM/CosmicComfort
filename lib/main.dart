@@ -209,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Night mode action
                       },
                       child: Image.asset(
-                        'assets/CosmicComfortLogo.PNG', // Replace with your image path
+                        'assets/CosmicComfortLogo.PNG', // Image path
                         width: 60,
                         height: 60,
                       ),
