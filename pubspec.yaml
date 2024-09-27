@@ -60,11 +60,12 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/CosmicComfortLogo.jpeg
+    - assets/CosmicComfortLogo.PNG
     - assets/Homescreen.JPG
     - assets/Ombre.PNG
     - assets/Calendar_MoodLogBG.JPG
     - assets/AccioBG.JPG
+    - assets/AccioIconClearBG.PNG
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

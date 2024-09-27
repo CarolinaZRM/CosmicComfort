@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/SettingsPage.dart'; // Import the settings page file
 import 'pages/ResourcesPage.dart';
+import 'pages/AccioPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -180,12 +181,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.bubble_chart, size: 40, color: Colors.white),
-                      onPressed: () {
-                        // Fake Chat
-                      },
+                    GestureDetector(
+                    onTap: () {
+                      // Navigate to Accio Page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AccioPage(),
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      'assets/AccioIconClearBG.PNG', // Image path
+                      width: 75,  // Set the width as needed
+                      height: 75, // Set the height as needed
+                      
                     ),
+                  ),
                     IconButton(
                       icon: const Icon(Icons.chat, size: 40, color: Colors.white),
                       onPressed: () {
@@ -197,9 +209,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Night mode action
                       },
                       child: Image.asset(
-                        'assets/CosmicComfortLogo.jpeg', // Replace with your image path
-                        width: 40,
-                        height: 40,
+                        'assets/CosmicComfortLogo.PNG', // Replace with your image path
+                        width: 60,
+                        height: 60,
                       ),
                     ),
                     IconButton(
