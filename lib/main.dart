@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'pages/SettingsPage.dart'; // Import the settings page file
 import 'pages/ResourcesPage.dart';
 import 'pages/AccioPage.dart';
+import 'pages/FakeCallPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -217,7 +218,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     IconButton(
                       icon: const Icon(Icons.call, size: 40, color: Colors.white),
                       onPressed: () {
-                        // Fake Call
+                        /// Navigate to Fake Call Page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const FakeCallPage()),
+                          );
                       },
                     ),
                     IconButton(
