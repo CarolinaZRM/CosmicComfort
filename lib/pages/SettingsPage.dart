@@ -10,7 +10,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   // Dropdown state variables
   String? selectedNotification = 'Notifications';
-  String? selectedFakeCallSetting = 'Fake Call Settings';
   String? selectedFakeChatSetting = 'Fake Chat Settings';
   String? selectedHelp = 'Help';
   String? selectedDisclaimer = 'Disclaimer';
@@ -22,6 +21,17 @@ class _SettingsPageState extends State<SettingsPage> {
   final List<String> disclaimerOptions = ['Disclaimer'];
 
   final String disclaimerText = "This app is intended for general informational and wellness purposes only and is not a substitute for professional psychiatric or psychological help. It should not be used as a replacement for diagnosis, treatment, or therapy for depression, anxiety, or any other mental health conditions. If you are experiencing symptoms of depression, anxiety, or any mental health crisis, please consult a licensed mental health professional. In case of an emergency, contact your local emergency services immediately.";
+  final String creditsText = 
+  '''
+        Software Engineering Capstone Project 
+        Fall, 2024 \n
+        Application Developers: 
+        Carolina Z. Rodríguez 
+        Oniel A. Plaza Pérez 
+        Jeremy Cabán Acevedo \n
+        Background Artist:
+        @Walls.Ai
+  ''';
 
   @override
   Widget build(BuildContext context) {
@@ -84,22 +94,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
                         const SizedBox(height: 20),
 
-                        // Fake Call Settings Dropdown
-                        buildDropdownMenu(
-                          context,
-                          icon: Icons.call,
-                          label: 'Fake Call Settings',
-                          value: selectedFakeCallSetting,
-                          items: fakeCallOptions,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedFakeCallSetting = newValue;
-                            });
-                          },
-                        ),
-
-                        const SizedBox(height: 20),
-
                         // Fake Chat Settings Dropdown
                         buildDropdownMenu(
                           context,
@@ -119,7 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         // Help Dropdown
                         buildDropdownMenu(
                           context,
-                          icon: Icons.help_outline,
+                          icon: Icons.help,
                           label: 'Help',
                           value: selectedHelp,
                           items: helpOptions,
@@ -130,89 +124,29 @@ class _SettingsPageState extends State<SettingsPage> {
                           },
                         ),
 
+                        // Disclaimer text dropdown menu
                         const SizedBox(height: 20),
-
-                        buildDisclaimer(context, 
+                        buildOnlyTextDropdown(context, 
                           icon: Icons.info, 
                           label: 'Disclaimer', 
+                          dropdownText: disclaimerText
+                        ),
+
+                        // Credits text dropdown menu
+                        const SizedBox(height: 20),
+                        buildOnlyTextDropdown(
+                          context, 
+                          icon: Icons.contacts, 
+                          label: 'Credits', 
+                          dropdownText: creditsText
                         )
+
+                        
                       ],
                     ),
                   )
                 ),
-                //const SizedBox(height: 20),
-
-                // // Notifications Dropdown
-                // buildDropdownMenu(
-                //   context,
-                //   icon: Icons.notifications,
-                //   label: 'Notifications',
-                //   value: selectedNotification,
-                //   items: notificationOptions,
-                //   onChanged: (newValue) {
-                //     setState(() {
-                //       selectedNotification = newValue;
-                //     });
-                //   },
-                // ),
-
-                // const SizedBox(height: 20),
-
-                // // Fake Call Settings Dropdown
-                // buildDropdownMenu(
-                //   context,
-                //   icon: Icons.call,
-                //   label: 'Fake Call Settings',
-                //   value: selectedFakeCallSetting,
-                //   items: fakeCallOptions,
-                //   onChanged: (newValue) {
-                //     setState(() {
-                //       selectedFakeCallSetting = newValue;
-                //     });
-                //   },
-                // ),
-
-                // const SizedBox(height: 20),
-
-                // // Fake Chat Settings Dropdown
-                // buildDropdownMenu(
-                //   context,
-                //   icon: Icons.chat,
-                //   label: 'Fake Chat Settings',
-                //   value: selectedFakeChatSetting,
-                //   items: fakeChatOptions,
-                //   onChanged: (newValue) {
-                //     setState(() {
-                //       selectedFakeChatSetting = newValue;
-                //     });
-                //   },
-                // ),
-
-                // const SizedBox(height: 20),
-
-                // // Help Dropdown
-                // buildDropdownMenu(
-                //   context,
-                //   icon: Icons.help_outline,
-                //   label: 'Help',
-                //   value: selectedHelp,
-                //   items: helpOptions,
-                //   onChanged: (newValue) {
-                //     setState(() {
-                //       selectedHelp = newValue;
-                //     });
-                //   },
-                // ),
-
-                // const SizedBox(height: 20),
-
-                // buildDisclaimer(context, 
-                //   icon: Icons.warning, 
-                //   label: 'Disclaimer', 
-                //   onChanged: (dummy){ 
-                //   },
-                // )
-
+                
               ],
             ),
           ),
@@ -221,9 +155,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget buildDisclaimer(BuildContext context, {
+// Helper/template method for text only dropdown menus. 
+  Widget buildOnlyTextDropdown(BuildContext context, {
     required IconData icon,
     required String label,
+    required String dropdownText,
+    
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
@@ -258,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   padding: const EdgeInsets.all(16.0),
                   child: SingleChildScrollView(
                     child: Text(
-                      disclaimerText,
+                      dropdownText,
                       style: const TextStyle(color: Colors.black87),
                     ),
                   ),
@@ -270,7 +207,6 @@ class _SettingsPageState extends State<SettingsPage> {
       )
     );
   }
-
 
 
 
