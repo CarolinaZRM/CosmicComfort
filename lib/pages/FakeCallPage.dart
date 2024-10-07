@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'CallerIDPage.dart';
 class FakeCallPage extends StatefulWidget {
   const FakeCallPage({Key? key}) : super(key: key);
 
@@ -155,6 +155,33 @@ class _FakeCallPageState extends State<FakeCallPage> {
                     ),
                   ),
                 ),
+
+                //TEST: CallerIDPage.dart
+                //UNCOMMENT code below until indicated section, this will add the button to test the
+                //CallIDPage, implementation for the actual callid dropdown may borrow elements from this
+                // Center(
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       // Trigger fake call action
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => const CallerIDPage(),
+                //         ),
+                //       );
+                //     },
+                //     style: ElevatedButton.styleFrom(
+                //       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                //       backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                //     ),
+                //     child: const Text(
+                //       'Test CallerID',
+                //       style: TextStyle(fontSize: 20, color: Colors.white),
+                //     ),
+                //   ),
+                // ),
+                //-------------------END TEST CALLIDPAGE-----------------------------
+
               ],
             ),
           ),
