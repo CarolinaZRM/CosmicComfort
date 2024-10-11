@@ -46,9 +46,15 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_icons:
+  android: true        # Set to true to change the Android app icon
+  ios: true            # Set to true to change the iOS app icon
+  image_path: "assets/AppIcon.PNG" # Path to your icon file
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -67,6 +73,7 @@ flutter:
     - assets/AccioBG.JPG
     - assets/AccioIconClearBG.PNG
     - assets/testPic.jpg
+    - assets/AppIcon.PNG
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

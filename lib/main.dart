@@ -3,6 +3,7 @@ import 'pages/SettingsPage.dart'; // Import the settings page file
 import 'pages/ResourcesPage.dart';
 import 'pages/AccioPage.dart';
 import 'pages/FakeCallPage.dart';
+import 'pages/InteractivePage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -94,6 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           icon: const Icon(Icons.touch_app, size: 50, color: Colors.white), // Changed interactive icon to touch_app
                           onPressed: () {
                             // Action for Interactive
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const InteractivePage(),
+                              ),
+                            );
                           },
                         ),
                         const Text(

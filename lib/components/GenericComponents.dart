@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// HEADER BAR
 Widget buildHeader({
   required String title,
   required BuildContext context
@@ -15,7 +16,7 @@ Widget buildHeader({
       ),
       Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 24,
           fontWeight: FontWeight.bold,

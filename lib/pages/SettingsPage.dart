@@ -12,13 +12,13 @@ class _SettingsPageState extends State<SettingsPage> {
   String? selectedNotification = 'Notifications';
   String? selectedFakeChatSetting = 'Fake Chat Settings';
   String? selectedHelp = 'Help';
-  String? selectedDisclaimer = 'Disclaimer';
+  String? selectedDisclaimer = 'Disclaimer'; // delete this line
   // Dropdown options
   final List<String> notificationOptions = ['Notifications', 'Enabled', 'Disabled'];
   final List<String> fakeCallOptions = ['Fake Call Settings', 'Silent', 'Ringing'];
   final List<String> fakeChatOptions = ['Fake Chat Settings', 'Enabled', 'Disabled'];
   final List<String> helpOptions = ['Help', 'FAQ', 'Contact Support'];
-  final List<String> disclaimerOptions = ['Disclaimer'];
+  final List<String> disclaimerOptions = ['Disclaimer']; // delete this line
 
   final String disclaimerText = "This app is intended for general informational and wellness purposes only and is not a substitute for professional psychiatric or psychological help. It should not be used as a replacement for diagnosis, treatment, or therapy for depression, anxiety, or any other mental health conditions. If you are experiencing symptoms of depression, anxiety, or any mental health crisis, please consult a licensed mental health professional. In case of an emergency, contact your local emergency services immediately.";
   final String creditsText = 
