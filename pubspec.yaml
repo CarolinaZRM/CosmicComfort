@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   url_launcher: ^6.0.20
+  audioplayers: ^1.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -74,6 +75,13 @@ flutter:
     - assets/AccioIconClearBG.PNG
     - assets/testPic.jpg
     - assets/AppIcon.PNG
+    - assets/sounds/just-relax.mp3
+    - assets/sounds/relaxing-piano.mp3
+    - assets/sounds/lo-fi-track-1.mp3
+    - assets/sounds/lo-fi-track-2.mp3
+    - assets/sounds/ocean-orchestra.mp3
+    - assets/sounds/piano-orchestra.mp3
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
