@@ -3,6 +3,7 @@ import 'pages/SettingsPage.dart'; // Import the settings page file
 import 'pages/ResourcesPage.dart';
 import 'pages/AccioPage.dart';
 import 'pages/FakeCallPage.dart';
+import 'pages/CalmingSoundsPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -165,8 +166,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           icon: const Icon(Icons.music_note, size: 50, color: Colors.white),
                           onPressed: () {
-                            // Action for Music
-                          },
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CalmingSoundsPage()),
+                          );
+                        },
                         ),
                         const Text(
                           'Music',
