@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
-import 'interactiveModes/WaterRipplesPage.dart';
-import 'interactiveModes/WaterTrailsPage.dart';
-import 'InteractiveModes/VibrationsPage.dart';
-import 'interactiveModes/PopItsPage.dart';
+// Separate pages for interactive modes
+import 'WaterRipplesPage.dart';
+import 'WaterTrailsPage.dart';
+import 'VibrationsPage.dart';
+import 'PopItsPage.dart';
 
 class InteractivePage extends StatelessWidget {
   const InteractivePage({super.key});

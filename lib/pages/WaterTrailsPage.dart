@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../components/GenericComponents.dart' as components;
+import '../components/GenericComponents.dart' as components;
 
-class VibrationsPage extends StatelessWidget {
-  const VibrationsPage({super.key});
+class WaterTrailsPage extends StatelessWidget {
+  const WaterTrailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class VibrationsPage extends StatelessWidget {
 
                 const SizedBox(height: 40), // Space below the title
                 
-                const Text("Vibrations Page Content"),
+                const Text("Water Trails Page Content"),
 
               ],
             ),
