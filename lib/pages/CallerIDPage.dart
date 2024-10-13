@@ -27,9 +27,8 @@ class _CallerIDPageState extends State<CallerIDPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10.0, 60.0, 10.0, 20.0),            
-            child: 
-            Expanded(
+            padding: const EdgeInsets.fromLTRB(10.0, 60.0, 10.0, 20.0),     
+            child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +130,6 @@ class _CallerIDPageState extends State<CallerIDPage> {
               
               )
             )
-            
           ),
           
 

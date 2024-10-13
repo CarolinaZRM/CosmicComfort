@@ -28,8 +28,7 @@ class _TextIDPageState extends State<TextIDPage> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(10.0, 60.0, 10.0, 20.0),            
-            child: 
-            Expanded(
+            child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
