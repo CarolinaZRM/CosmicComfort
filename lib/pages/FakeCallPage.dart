@@ -3,6 +3,7 @@ import 'CallerIDPage.dart';
 import 'RingtonePage.dart';
 import 'CallTime.dart';
 import '../components/GenericComponents.dart' as components;
+import 'AndroidCallPage.dart';
 class FakeCallPage extends StatefulWidget {
   const FakeCallPage({Key? key}) : super(key: key);
 
@@ -100,6 +101,13 @@ class _FakeCallPageState extends State<FakeCallPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Trigger fake call action
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          //TODO: Contact Name should be from DB
+                          builder: (context) => const AndroidCallPage(contactName: "Hello this name is too long and will start scrolling when testing"),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
