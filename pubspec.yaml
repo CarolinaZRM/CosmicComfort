@@ -81,6 +81,12 @@ flutter:
     - assets/sounds/lo-fi-track-2.mp3
     - assets/sounds/ocean-orchestra.mp3
     - assets/sounds/piano-orchestra.mp3
+    - assets/sounds/CuteRingtone.mp3
+    - assets/sounds/iOnlySleepAtNight.mp3
+    - assets/sounds/KawaRingtone.mp3
+    - assets/sounds/nightRingtone.mp3
+    - assets/sounds/SoftMelody.mp3
+
 
 
 

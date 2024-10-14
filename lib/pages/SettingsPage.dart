@@ -32,7 +32,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Oniel A. Plaza Pérez 
   Jeremy Cabán Acevedo \n
   Background Artist:
-  @Walls.Ai
+  @Walls.Ai \n
+  Ringtones:
+  vibritherabjit123
+  skylar.mianlind
   ''';
 
   // Method to navigate to the Text ID page

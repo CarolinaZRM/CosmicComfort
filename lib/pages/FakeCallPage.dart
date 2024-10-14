@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'CallerIDPage.dart';
+import 'RingtonePage.dart';
+import 'CallTime.dart';
+import '../components/GenericComponents.dart' as components;
 class FakeCallPage extends StatefulWidget {
   const FakeCallPage({Key? key}) : super(key: key);
 
@@ -59,82 +62,35 @@ class _FakeCallPageState extends State<FakeCallPage> {
 
                 const SizedBox(height: 20), // Space below the title
 
-                // Dropdown for Time Setting
-                _buildDropdownMenu(
-                  title: 'Time',
-                  icon: Icons.schedule,
-                  value: selectedTime,
-                  items: ['10 seconds', '30 seconds', '1 minute', '5 minutes'],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedTime = value;
-                    });
-                  },
+                components.buildPageRedirectCard(
+                  icon: Icons.schedule, 
+                  title: "Time",
+                  context: context,
+                  page: const CallTimePage(),
+                  trailingIcon: Icons.chevron_right_outlined
                 ),
 
-                // Dropdown for Caller Setting
-                _buildDropdownMenu(
-                  title: 'Caller',
-                  icon: Icons.person,
-                  value: selectedCaller,
-                  items: ['Mom', 'Boss', 'Friend', 'Unknown'],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCaller = value;
-                    });
-                  },
+                components.buildPageRedirectCard(
+                  icon: Icons.person, 
+                  title: "Caller ID", 
+                  context: context, 
+                  page: const CallerIDPage(),
+                  trailingIcon: Icons.chevron_right_outlined
                 ),
 
-                // Dropdown for Ringtone Setting
-                _buildDropdownMenu(
-                  title: 'Ringtone',
+                // This card will redirect user to the Ringtone page
+                components.buildPageRedirectCard(
                   icon: Icons.music_note,
-                  value: selectedRingtone,
-                  items: ['Ringtone 1', 'Ringtone 2', 'Ringtone 3'],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRingtone = value;
-                    });
-                  },
+                  title: "Ringtone",
+                  context: context,
+                  page: const RingtonePage(),
+                  trailingIcon: Icons.chevron_right_outlined //optional parameter!
                 ),
 
-                // Dropdown for Voice Setting
-                _buildDropdownMenu(
-                  title: 'Voice',
-                  icon: Icons.record_voice_over,
-                  value: selectedVoice,
-                  items: ['Voice 1', 'Voice 2', 'Voice 3'],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedVoice = value;
-                    });
-                  },
-                ),
-
-                // Dropdown for Wallpaper Setting
-                _buildDropdownMenu(
-                  title: 'Wallpaper',
-                  icon: Icons.wallpaper,
-                  value: selectedWallpaper,
-                  items: ['Wallpaper 1', 'Wallpaper 2', 'Wallpaper 3'],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedWallpaper = value;
-                    });
-                  },
-                ),
-
-                // Dropdown for More Settings
-                _buildDropdownMenu(
-                  title: 'More',
-                  icon: Icons.more_horiz,
-                  value: selectedMore,
-                  items: ['Option 1', 'Option 2', 'Option 3'],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedMore = value;
-                    });
-                  },
+                const components.RadioChoiceCard(
+                  icon: Icons.radio, 
+                  title: "LED Flashlight",
+                  leadingIcon: Icons.flash_on_outlined, //optional parameter
                 ),
 
                 const SizedBox(height: 20), // Space below dropdowns

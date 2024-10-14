@@ -39,28 +39,34 @@ class InteractivePage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: ListView(
                       children: [
-                        buildInteractiveModeCard(
+                        // cards that redirect user to different page
+                        components.buildPageRedirectCard(
                           icon: Icons.ads_click_outlined,
                           title: "Water Ripples",
                           context: context,
-                          page: const WaterRipplesPage()
+                          page: const WaterRipplesPage() 
                         ),
-                        buildInteractiveModeCard(
+
+                        components.buildPageRedirectCard(
                           icon: Icons.water_drop,
                           title: "Water Trails",
                           context: context,
                           page: const WaterTrailsPage()
                         ),
-                        buildInteractiveModeCard(
+
+                        components.buildPageRedirectCard(
                           icon: Icons.vibration,
-                          title: "Vibrations",context: context,
+                          title: "Vibrations",
+                          context: context,
                           page: const VibrationsPage()
                         ),
-                        buildInteractiveModeCard(
+
+                        components.buildPageRedirectCard(
                           icon: Icons.catching_pokemon,
-                          title: "Pop Its",context: context,
+                          title: "Pop Its",
+                          context: context,
                           page: const PopItsPage()
-                        )
+                        ),
                       ],
                     )
                     )
@@ -73,28 +79,3 @@ class InteractivePage extends StatelessWidget {
     );
   }
 }
-
-// Method for Interactive Mode cards builder
-  Widget buildInteractiveModeCard({
-    required IconData icon,
-    required String title,
-    required BuildContext context,
-    required Widget page, // New page parameter
-  }) {
-    return Card(
-      color: Colors.white.withOpacity(0.9),
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ListTile(
-        leading: Icon(icon, color: const Color.fromARGB(255, 92, 50, 129)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        onTap: () {
-          // Take to corresponding page
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => page),
-          );
-
-        },
-      ),
-    );
-  }
