@@ -3,8 +3,9 @@ import 'package:marquee/marquee.dart';
 import 'package:flutter/material.dart';
 
 class AndroidCallPage extends StatefulWidget {
-  const AndroidCallPage({Key? key, this.contactName}) : super(key: key);
+  const AndroidCallPage({Key? key, this.waited, this.contactName}) : super(key: key);
   final String? contactName;
+  final bool? waited;
   @override
   State<AndroidCallPage> createState() => _AndroidCallPageState();
 }
@@ -14,7 +15,7 @@ class _AndroidCallPageState extends State<AndroidCallPage> {
   String contact = ""; // Store the contact name
   bool isMuted = false; // State for mute button
   bool isSpeakerOn = false; // State for speaker button
-
+  bool waited = false;
   Timer? _timer;
   bool shouldScroll = false;
 
@@ -22,7 +23,7 @@ class _AndroidCallPageState extends State<AndroidCallPage> {
   void initState() {
     super.initState();
     startCallTimer();
-
+    waited = widget.waited ?? false;
     contact = widget.contactName ?? "Unkown Caller";
     //Account for names with only spaces
     contact = contact.trim();
@@ -170,6 +171,9 @@ class _AndroidCallPageState extends State<AndroidCallPage> {
                     onTap: () {
                       // End the call logic
                       Navigator.pop(context); // Simulate ending the call
+                      if(waited){
+                        Navigator.pop(context); //if we came from the delay page
+                      }
                     },
                     color: Colors.white,
                     isEndCall: true,

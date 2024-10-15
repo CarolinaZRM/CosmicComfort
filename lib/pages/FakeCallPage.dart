@@ -3,6 +3,7 @@ import 'CallerIDPage.dart';
 import 'RingtonePage.dart';
 import 'CallTime.dart';
 import '../components/GenericComponents.dart' as components;
+import 'CallDelayPage.dart';
 import 'AndroidCallPage.dart';
 class FakeCallPage extends StatefulWidget {
   const FakeCallPage({Key? key}) : super(key: key);
@@ -13,7 +14,8 @@ class FakeCallPage extends StatefulWidget {
 
 class _FakeCallPageState extends State<FakeCallPage> {
   // Define variables to store the dropdown selections
-  String? selectedTime;
+  //TODO: selectedTime should be from DB
+  String selectedTime = "5";
   String? selectedCaller;
   String? selectedRingtone;
   String? selectedVoice;
@@ -101,13 +103,24 @@ class _FakeCallPageState extends State<FakeCallPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Trigger fake call action
-                      Navigator.push(
+                      if(int.parse(selectedTime) > 0){
+                        Navigator.push(
                         context,
                         MaterialPageRoute(
                           //TODO: Contact Name should be from DB
-                          builder: (context) => const AndroidCallPage(contactName: "Hello this name is too long and will start scrolling when testing"),
+                          builder: (context) => CallDelayPage(contactName: "Hello this name is too long and will start scrolling when testing", time: int.parse(selectedTime)),
                         ),
                       );
+                      }
+                      else{
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            //TODO: Contact Name should be from DB
+                            builder: (context) => AndroidCallPage(contactName: "Hello this name is too long and will start scrolling when testing", waited: false),
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
