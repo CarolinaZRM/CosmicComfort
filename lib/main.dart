@@ -5,6 +5,7 @@ import 'pages/AccioPage.dart';
 import 'pages/FakeCallPage.dart';
 import 'pages/InteractivePage.dart';
 import 'pages/CalmingSoundsPage.dart';
+import 'pages/BreathingPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -140,7 +141,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           icon: const Icon(Icons.air, size: 50, color: Colors.white),
                           onPressed: () {
-                            // Action for Music
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const BreathingPage()),
+                            );
                           },
                         ),
                         const Text(
