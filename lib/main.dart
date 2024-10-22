@@ -6,6 +6,7 @@ import 'pages/FakeCallPage.dart';
 import 'pages/InteractivePage.dart';
 import 'pages/CalmingSoundsPage.dart';
 import 'pages/BreathingPage.dart';
+import 'pages/CalendarPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -83,6 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           icon: const Icon(Icons.calendar_today, size: 50, color: Colors.white),
                           onPressed: () {
                             // Action for the Calendar Icon
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CalendarPage(),
+                              ),
+                            );
                           },
                         ),
                         const Text(
@@ -222,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Night mode action
+                        // Action
                       },
                       child: Image.asset(
                         'assets/CosmicComfortLogo.PNG', // Image path
