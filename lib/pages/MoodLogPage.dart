@@ -54,6 +54,18 @@ class _MoodLogPageState extends State<MoodLogPage> {
                       components.buildHeader(title: "Mood Log", context: context),
                       const SizedBox(height: 40), // Space below the title
                       
+                      // Test that date chosen is saved!
+                      Text(
+                        formattedDate,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ), // Text color to black
+                      ),
+
+                      const SizedBox(height: 10),
+                      
                       // White box for mood selector
                       Container(
                         width: double.infinity,
@@ -72,15 +84,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Test that date chosen is saved!
-                            Text(
-                              formattedDate,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ), // Text color to black
-                            ),
+                            
 
                             const Text(
                               'How do you feel today?',
