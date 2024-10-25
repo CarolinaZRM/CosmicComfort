@@ -39,14 +39,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 //------
 
                 const SizedBox(height: 80), // Space below the title
-                
-
-                // components.buildPageRedirectCard(
-                //   icon: Icons.catching_pokemon,
-                //   title: "Placeholder that will lead to mood log page",
-                //   context: context,
-                //   page: const MoodLogPage()
-                // ),
 
                 // Calendar with rounded corners and white background
                 Padding(

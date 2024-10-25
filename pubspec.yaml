@@ -39,6 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   # Add calendar to be used in the calendar page
   table_calendar: ^3.0.0
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
 import 'package:intl/intl.dart'; // Import intl package
+import 'package:flutter_colorpicker/flutter_colorpicker.dart'; // Import the color picker package
 
 class MoodLogPage extends StatefulWidget {
   const MoodLogPage({super.key, this.date});
@@ -15,6 +16,19 @@ class _MoodLogPageState extends State<MoodLogPage> {
   TextEditingController _thoughtsController = TextEditingController(); // Controller for text input
   DateTime selectedDate = DateTime.now();
 
+  // For custom mood feature
+  List<Map<String, dynamic>> moodList = [
+    {'mood': 'Happy', 'color': Colors.yellow},
+    {'mood': 'Sick', 'color': Colors.green},
+    {'mood': 'Sad', 'color': Colors.blue},
+    {'mood': 'Tired', 'color': Colors.grey},
+    {'mood': 'Angry', 'color': Colors.red},
+    {'mood': 'Anxious', 'color': Colors.orange},
+    {'mood': 'Average', 'color': Colors.purple},
+  ];
+  Color _customColor = Colors.black; // Initial color for custom mood
+  TextEditingController _customMoodController = TextEditingController(); // Controller for custom mood name
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +41,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
     String formattedDate = DateFormat('EEEE, MMMM d, y').format(selectedDate); // Example: "Monday, October 24, 2024"
     return Scaffold(
       resizeToAvoidBottomInset: true, // Ensures the screen resizes when the keyboard shows up
-      body: GestureDetector( // Added GestureDetector
+      body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus(); // Dismisses the keyboard when tapping outside
         },
@@ -54,14 +68,14 @@ class _MoodLogPageState extends State<MoodLogPage> {
                       components.buildHeader(title: "Mood Log", context: context),
                       const SizedBox(height: 40), // Space below the title
                       
-                      // Test that date chosen is saved!
+                      // Display the selected date
                       Text(
                         formattedDate,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                        ), // Text color to black
+                        ),
                       ),
 
                       const SizedBox(height: 10),
@@ -84,28 +98,21 @@ class _MoodLogPageState extends State<MoodLogPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            
-
                             const Text(
                               'How do you feel today?',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                              ), // Text color to black
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Wrap(
                               spacing: 10,
                               children: [
-                                moodRadioButton('Happy', const Color.fromARGB(255, 231, 209, 17)),
-                                moodRadioButton('Sick', Colors.green),
-                                moodRadioButton('Sad', Colors.blue),
-                                moodRadioButton('Tired', Colors.grey),
-                                moodRadioButton('Angry', Colors.red),
-                                moodRadioButton('Anxious', Colors.orange),
-                                moodRadioButton('Average', Colors.purple),
-                                moodRadioButton('Custom', Colors.black),
+                                ...moodList.map((moodData) => moodRadioButton(moodData['mood'], moodData['color'])).toList(),
+                                const SizedBox(height: 10),
+                                customMoodButton(), // Button to add a new custom mood
                               ],
                             ),
                           ],
@@ -161,7 +168,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
     );
   }
 
-  // Helper function to create mood radio buttons
+  // Helper function to create mood radio buttons with labels
   Widget moodRadioButton(String mood, Color color) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -174,13 +181,134 @@ class _MoodLogPageState extends State<MoodLogPage> {
               _selectedMood = value!;
             });
           },
-          activeColor: color,
+          activeColor: color, // Assign the color to the active state
         ),
         Text(
           mood,
-          style: const TextStyle(color: Colors.black), // Text color in black for better readability
+          style: const TextStyle(color: Colors.black),
         ),
       ],
+    );
+  }
+
+  // Custom mood button
+  Widget customMoodButton() {
+    return GestureDetector(
+      onTap: () {
+        _openCustomMoodDialog();
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(  //for circle
+            width: 19,
+            height: 19,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(color: Colors.black),
+            ),
+            child: const Center(
+              child: Icon(Icons.add, color: Colors.black, size: 14), // Plus icon for custom mood
+            ),
+          ),
+          const SizedBox(width: 8), // Spacing between icon and label
+          const Text(
+            'Custom',
+            style: TextStyle(color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Open dialog for custom mood creation
+  void _openCustomMoodDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Create Custom Mood'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _customMoodController,
+                decoration: const InputDecoration(hintText: 'Enter mood name'),
+              ),
+              const SizedBox(height: 20),
+              const Text('Pick a color for your mood'),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  _showColorPicker(context); // Call the Flutter color picker dialog
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: _customColor),
+                child: const Text('Pick Color'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                setState(() {
+                  if (_customMoodController.text.isNotEmpty) {
+                    moodList.add({
+                      'mood': _customMoodController.text,
+                      'color': _customColor,
+                    });
+                    _customMoodController.clear(); // Clear the input for next time
+                    _customColor = Colors.black; // Reset color picker
+                  }
+                });
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Flutter's color picker dialog
+  void _showColorPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pick Mood Color'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                ColorPicker(
+                  pickerColor: _customColor,
+                  onColorChanged: (Color color) {
+                    setState(() {
+                      _customColor = color;
+                    });
+                  },
+                  showLabel: false, // You can enable this if you want hex value labels
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Done'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
