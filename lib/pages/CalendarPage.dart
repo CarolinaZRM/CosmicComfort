@@ -15,6 +15,13 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
 
+  // TODO: ALL dates must be obtained from DB and formatted as such
+  final Map<DateTime, Color> dateColors = {
+    DateTime.utc(2024, 10, 23): Colors.blue,
+    DateTime.utc(2024, 10, 29): Colors.red,
+    DateTime.utc(2024, 10, 3): Colors.green,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,11 +85,33 @@ class _CalendarPageState extends State<CalendarPage> {
                           // Call your method with the selected date
                           //_runMethodForSelectedDate(selectedDay);
                         },
+                        calendarBuilders: CalendarBuilders(
+                          // Builder for default day cells with conditional coloring
+                          defaultBuilder: (context, day, focusedDay) {
+                            final color = dateColors[day];
+                            return color != null
+                                ? Container(
+                                    margin: const EdgeInsets.all(6), // Align to default circle's margins
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: color, // Apply specific color
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      '${day.day}',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 1) * 1.15,
+                                      ),
+                                    ),
+                                  )
+                                : null;
+                          },
+                        ),
                       ),
                     ),
                   ),
                 ),
-
               ],
             ),
           )
