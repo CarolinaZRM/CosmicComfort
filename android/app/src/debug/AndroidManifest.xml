@@ -4,4 +4,9 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!--Activity tag added to force app to always remain in portraid mode
+    and disable rotation: Android specific-->
+    <activity>
+    android:screenOrientation="portrait"
+    </activity>
 </manifest>

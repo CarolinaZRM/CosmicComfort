@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'pages/SettingsPage.dart'; // Import the settings page file
 import 'pages/ResourcesPage.dart';
 import 'pages/AccioPage.dart';
@@ -9,7 +10,13 @@ import 'pages/BreathingPage.dart';
 import 'pages/CalendarPage.dart';
 
 void main() {
-  runApp(const MyApp());
+  // Modified so that the application screen doesn't change orientation
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // force screen to always be in portrait mode
+  ]).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
