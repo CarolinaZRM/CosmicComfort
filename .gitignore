@@ -6,6 +6,7 @@ macos/
 web/
 windows/
 web/
+node_modules/
 
 .dart_tool/
 .packages
