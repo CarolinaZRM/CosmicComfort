@@ -8,6 +8,7 @@ import 'pages/InteractivePage.dart';
 import 'pages/CalmingSoundsPage.dart';
 import 'pages/BreathingPage.dart';
 import 'pages/CalendarPage.dart';
+import 'pages/SelfCareRemindersPage.dart';
 
 void main() {
   // Modified so that the application screen doesn't change orientation
@@ -178,6 +179,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           icon: const Icon(Icons.notes_outlined , size: 50, color: Colors.white),
                           onPressed: () {
                             // Action for Breathing exercise
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const SelfCareRemindersPage()),
+                            );
                           },
                         ),
                         const Text(
