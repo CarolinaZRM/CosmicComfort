@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/settings/TextIDPage.dart';
+import '../pages/InstructionsPage.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -15,12 +16,11 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isAccioCheckInEnabled = false;
 
   // State variables for Fake Chat Settings and Help dropdowns
-  String selectedFakeChatOption = 'Text ID'; // Default selected option
-  String selectedHelpOption = 'Instructions to use the app'; // Default selected option
+  String selectedFakeChatOption = 'Text ID'; // Default selected option// Default selected option
 
   // Fake Chat Settings and Help dropdown options
   final List<String> fakeChatOptions = ['Text ID'];
-  final List<String> helpOptions = ['Instructions to use the app'];
+  final List<String> helpOptions = ['Press here for instructions on how to use the app'];
 
   final String disclaimerText = '''This app is intended for general informational and wellness purposes only and is not a substitute for professional psychiatric or psychological help. It should not be used as a replacement for diagnosis, treatment, or therapy for depression, anxiety, or any other mental health conditions. If you are experiencing symptoms of depression, anxiety, or any mental health crisis, please consult a licensed mental health professional. In case of an emergency, contact your local emergency services immediately.''';
 
@@ -160,9 +160,11 @@ class _SettingsPageState extends State<SettingsPage> {
         return ListTile(
           title: Text(option),
           onTap: () {
-            if (option == 'Instructions to use the app') {
-              _navigateToInstructionsPage(context); // Navigate to Instructions page if selected
-            }
+            // Take to corresponding page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const InstructionsPage()),
+        );
           },
         );
       }).toList(),
@@ -260,23 +262,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Placeholder page for Instructions
-class InstructionsPage extends StatelessWidget {
-  const InstructionsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Instructions to use the app'),
-      ),
-      body: const Center(
-        child: Text('Instructions Page'),
       ),
     );
   }
