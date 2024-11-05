@@ -13,7 +13,6 @@ class _SettingsPageState extends State<SettingsPage> {
   // State variables for notifications toggles
   bool isSelfCareReminderEnabled = false;
   bool isLogReminderEnabled = false;
-  bool isAccioCheckInEnabled = false;
 
   // State variables for Fake Chat Settings and Help dropdowns
   String selectedFakeChatOption = 'Text ID'; // Default selected option// Default selected option
@@ -32,7 +31,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Oniel A. Plaza Pérez 
   Jeremy Cabán Acevedo \n
   Background Artist:
-  @Walls.Ai \n
+  @Walls.Ai
+  ImagiGraphStudio \n
   Ringtones:
   vibritherabjit123
   skylar.mianlind
@@ -105,13 +105,6 @@ class _SettingsPageState extends State<SettingsPage> {
           value: isLogReminderEnabled,
           onChanged: (value) => setState(() {
             isLogReminderEnabled = value;
-          }),
-        ),
-        buildSwitchTile(
-          label: 'Accio Check-ins',
-          value: isAccioCheckInEnabled,
-          onChanged: (value) => setState(() {
-            isAccioCheckInEnabled = value;
           }),
         ),
       ],

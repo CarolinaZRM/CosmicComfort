@@ -106,7 +106,7 @@ class ResourcesPage extends StatelessWidget {
       color: Colors.white.withOpacity(0.9), // White box with slight opacity
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
-        leading: Icon(icon, color: Colors.blue),
+        leading: Icon(icon, color: Colors.black),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
         trailing: Text(
