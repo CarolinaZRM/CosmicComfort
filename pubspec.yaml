@@ -80,6 +80,7 @@ flutter:
     - assets/AccioIconClearBG.PNG
     - assets/testPic.jpg
     - assets/AppIcon.PNG
+    - assets/SignIn.JPG
     - assets/sounds/just-relax.mp3
     - assets/sounds/relaxing-piano.mp3
     - assets/sounds/lo-fi-track-1.mp3
