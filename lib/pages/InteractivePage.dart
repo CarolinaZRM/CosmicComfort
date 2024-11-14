@@ -55,13 +55,6 @@ class InteractivePage extends StatelessWidget {
                         ),
 
                         components.buildPageRedirectCard(
-                          icon: Icons.vibration,
-                          title: "Vibrations",
-                          context: context,
-                          page: const VibrationsPage()
-                        ),
-
-                        components.buildPageRedirectCard(
                           icon: Icons.catching_pokemon,
                           title: "Pop Its",
                           context: context,

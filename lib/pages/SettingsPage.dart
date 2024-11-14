@@ -126,24 +126,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  // Fake Chat Settings dropdown builder
-  Widget buildFakeChatSettingsDropdown() {
-    return buildDropdown(
-      icon: Icons.chat,
-      label: 'Fake Chat Settings',
-      children: fakeChatOptions.map((option) {
-        return ListTile(
-          title: Text(option),
-          onTap: () {
-            if (option == 'Text ID') {
-              _navigateToTextIDPage(context); // Navigate to Text ID page if selected
-            }
-          },
-        );
-      }).toList(),
-    );
-  }
-
   // Help dropdown builder
   Widget buildHelpDropdown() {
     return buildDropdown(
@@ -231,8 +213,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         buildNotificationsDropdown(),
-                        const SizedBox(height: 20),
-                        buildFakeChatSettingsDropdown(),
                         const SizedBox(height: 20),
                         buildHelpDropdown(),
                         const SizedBox(height: 20),

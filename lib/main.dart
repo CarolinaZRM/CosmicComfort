@@ -9,6 +9,7 @@ import 'pages/CalmingSoundsPage.dart';
 import 'pages/BreathingPage.dart';
 import 'pages/CalendarPage.dart';
 import 'pages/SelfCareRemindersPage.dart';
+import 'pages/SignInPage.dart';
 
 void main() {
   // Modified so that the application screen doesn't change orientation
@@ -136,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           icon: const Icon(Icons.now_widgets, size: 50, color: Colors.white),
                           onPressed: () {
-                            // Action for Breathing exercise
+                            // Action for Resources
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -156,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           icon: const Icon(Icons.air, size: 50, color: Colors.white),
                           onPressed: () {
+                            // Action for Breathing Excersises
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const BreathingPage()),
@@ -178,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           icon: const Icon(Icons.notes_outlined , size: 50, color: Colors.white),
                           onPressed: () {
-                            // Action for Breathing exercise
+                            // Action for Reminders
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const SelfCareRemindersPage()),
@@ -196,6 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           icon: const Icon(Icons.music_note, size: 50, color: Colors.white),
                           onPressed: () {
+                            // Action for Music
                             Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => const CalmingSoundsPage()),
@@ -262,7 +265,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     IconButton(
                       icon: const Icon(Icons.person, size: 40, color: Colors.white),
                       onPressed: () {
-                        // User profile or bot
+                        //Navigate User profile
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SignInPage()),
+                          );
                       },
                     ),
                   ],

@@ -30,7 +30,7 @@ Widget buildHeader({
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ PAGE REDIRECT CARD ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
 //  Helper function to build a card that will redirect user to another page once pressed
 Widget buildPageRedirectCard({
-  required IconData icon,
+  IconData? icon,
   required String title,
   required BuildContext context,
   required Widget page, // New page parameter
@@ -40,7 +40,8 @@ Widget buildPageRedirectCard({
     color: Colors.white.withOpacity(0.9),
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     child: ListTile(
-      leading: Icon(icon, color: const Color.fromARGB(255, 92, 50, 129)),
+      //leading: Icon(icon, color: const Color.fromARGB(255, 92, 50, 129)),
+      leading: icon != null ? Icon(icon) : null, // Conditionally render the leading icon
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       trailing: trailingIcon != null ? Icon(trailingIcon) : null, // Conditionally render the trailing icon
       onTap: () {
@@ -54,9 +55,26 @@ Widget buildPageRedirectCard({
     ),
   );
 }
-
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ PLACEHOLDER ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
 
+
+
+// ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ SHOW INFO CARD ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
+// this is a regular card whose only purpose is to show information
+Widget ShowUserInfoCard({
+    //required IconData icon,
+    required String title,
+    required BuildContext context,
+  }) {
+    return Card(
+      color: Colors.white.withOpacity(0.9),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ListTile(
+        //leading: Icon(icon, color: const Color.fromARGB(255, 92, 50, 129)),
+        title: Text(title),
+      ),
+    );
+  }
 
 
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ RADIO SWITCH ICON ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
@@ -123,3 +141,5 @@ NOT USING LEADING ICON:
   icon: Icons.radio, title: "Ringtone"
 ),
  */
+
+// ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ PLACEHOLDER ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
