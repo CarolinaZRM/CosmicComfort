@@ -11,9 +11,15 @@ import 'pages/CalendarPage.dart';
 import 'pages/SelfCareRemindersPage.dart';
 import 'pages/SignInPage.dart';
 
-void main() {
+//Notifications:
+import './notification/notifications.dart';
+
+void main() async {
   // Modified so that the application screen doesn't change orientation
   WidgetsFlutterBinding.ensureInitialized();
+
+  await NotificationService().initializeNotifications();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp, // force screen to always be in portrait mode
   ]).then((_) {

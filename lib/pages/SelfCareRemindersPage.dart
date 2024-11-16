@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
 import 'CustomReminderSetupPage.dart';
+import '../notification/notifications.dart';
 
 class SelfCareRemindersPage extends StatefulWidget {
   const SelfCareRemindersPage({Key? key}) : super(key: key);
@@ -143,6 +144,83 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                   ),
                   buildCustomRemindersCard(),
                   if (showNewReminderCard) buildNewReminderCard(context),
+
+
+                  // Notification Testing!
+                  ElevatedButton(
+                    onPressed: () {
+                      // Create instant notification
+                      NotificationService().showNotification(0, "New Notification", "Test Notification");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                    ),
+                    child: const Text(
+                      'Test Notifications',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
+                  // Schedule a notification
+                  ElevatedButton(
+                    onPressed: () {
+                      
+                      final DateTime scheduledTime = DateTime.now().add(const Duration(minutes: 1));
+                      //var scheduledTime = tz.local;
+                      NotificationService().scheduleNotification(
+                        1,
+                        "New Scheduled Notification", 
+                        "Test Notification",
+                        scheduledTime, 
+                        context
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                    ),
+                    child: const Text(
+                      'Test Schedule Notifications',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
+
+                  // Test Periodic notifications
+                  ElevatedButton(
+                    onPressed: () {
+                      
+                      NotificationService().showPeriodicNotification(
+                        1,
+                        "New Periodic Notification", 
+                        "Test Notification",                         
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                    ),
+                    child: const Text(
+                      'Test Periodic Notifications',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
+
+                  // Test cancel notifications
+                  ElevatedButton(
+                    onPressed: () {
+                      
+                      NotificationService().cancelNotification(1);
+                    
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                    ),
+                    child: const Text(
+                      'Test Cancel Notifications',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
                 ],
               ),
             ),
