@@ -169,7 +169,7 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                       //var scheduledTime = tz.local;
                       NotificationService().scheduleNotification(
                         1,
-                        "New Notification", 
+                        "New Scheduled Notification", 
                         "Test Notification",
                         scheduledTime, 
                         context
@@ -191,7 +191,7 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                       
                       NotificationService().showPeriodicNotification(
                         1,
-                        "New Notification", 
+                        "New Periodic Notification", 
                         "Test Notification",                         
                       );
                     },

@@ -35,7 +35,18 @@ class NotificationService {
         await androidPlugin.requestNotificationsPermission();
       }
     }
-    
+
+    requestIOSPermissions();
+  }
+
+  Future<void> requestIOSPermissions() async {
+    final iOSPlugin = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+    await iOSPlugin?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
   }
 
   Future<void> onSelectNotification(NotificationResponse response) async {
@@ -51,7 +62,14 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.high,
     );
-    const darwinDetails = DarwinNotificationDetails();
+
+    // iOS Notification Details
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+    
     const platformDetails = NotificationDetails(android: androidDetails, iOS: darwinDetails);
 
     await flutterLocalNotificationsPlugin.show(id, title, body, platformDetails);
@@ -81,7 +99,14 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.high,
     );
-    const darwinDetails = DarwinNotificationDetails();
+
+    // iOS Notification Details
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );    
+
     const platformDetails = NotificationDetails(android: androidDetails, iOS: darwinDetails);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
