@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		bh+i91kp2qP6ZukB2+jL2Id6urg=
+		At9dsgYusvFdN+E36+YI/4KaLXE=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		mAb4NzvpXucNCg9D6io5Wn0axxU=
+		9Cl12RaBmujWduRac+B9KtXTZuw=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,15 +22,31 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		MtGhqy1N83LymF+xVlvBDq1bNtY=
+		p+9/SSTcAi7K13xXntlLaVhBRQU=
+		</data>
+		<key>flutter_assets/assets/AccioAnxietyManager.png</key>
+		<data>
+		cDVMaIjfX4Q9ml+L/uS1oYEeX+w=
 		</data>
 		<key>flutter_assets/assets/AccioBG.JPG</key>
 		<data>
 		B5mXs+KtiyeG2gBLKc3oaLWIEWk=
 		</data>
+		<key>flutter_assets/assets/AccioIconClearBG.PNG</key>
+		<data>
+		ouy1rvjlD3o1byecWiEUlOOI07E=
+		</data>
+		<key>flutter_assets/assets/AppIcon.PNG</key>
+		<data>
+		K07X0P9GvW/ZPBZ25VyefNxAydk=
+		</data>
 		<key>flutter_assets/assets/Calendar_MoodLogBG.JPG</key>
 		<data>
 		itVpbJi2RmtNy7GWZaSfFMccB20=
+		</data>
+		<key>flutter_assets/assets/CosmicComfortLogo.PNG</key>
+		<data>
+		db1JCtlVaYM/imKJYHwFoRlEq/g=
 		</data>
 		<key>flutter_assets/assets/CosmicComfortLogo.jpeg</key>
 		<data>
@@ -44,6 +60,70 @@
 		<data>
 		w6tGrnwON5rDXZh6lSJnYGOh010=
 		</data>
+		<key>flutter_assets/assets/SignIn.JPG</key>
+		<data>
+		40M7Qy1DQCvRwHGAGrqCIFLIf88=
+		</data>
+		<key>flutter_assets/assets/WaterRipplesBG.JPG</key>
+		<data>
+		8vtaKDiDKLR/n/ucdHZY1sl3JYk=
+		</data>
+		<key>flutter_assets/assets/WaterTrailsBG.JPG</key>
+		<data>
+		Ras6KhkqC0D4Sp+kFlXoI/tu3jw=
+		</data>
+		<key>flutter_assets/assets/sounds/CuteRingtone.mp3</key>
+		<data>
+		psovMa4zOLF2exgDJdcrYucsU8s=
+		</data>
+		<key>flutter_assets/assets/sounds/KawaRingtone.mp3</key>
+		<data>
+		0jQqTLmMcGhc4OtttsyaRt/v51s=
+		</data>
+		<key>flutter_assets/assets/sounds/SoftMelody.mp3</key>
+		<data>
+		ujfwx5K2mD/gwl+qEHRO28yNqQk=
+		</data>
+		<key>flutter_assets/assets/sounds/iOnlySleepAtNight.mp3</key>
+		<data>
+		i3fhYYg//ifpIhksSYVQiL6Dbo0=
+		</data>
+		<key>flutter_assets/assets/sounds/just-relax.mp3</key>
+		<data>
+		S7vCJvaKuHtKMripRGRxNvw0ins=
+		</data>
+		<key>flutter_assets/assets/sounds/lo-fi-track-1.mp3</key>
+		<data>
+		FhsQOcESPY2vVd9APvUyQL0IGqE=
+		</data>
+		<key>flutter_assets/assets/sounds/lo-fi-track-2.mp3</key>
+		<data>
+		EnAKkjLyBuvNLUF4NFEONCaUCVY=
+		</data>
+		<key>flutter_assets/assets/sounds/nightRingtone.mp3</key>
+		<data>
+		GYdsfnhAgKB2BgdaLc7EpjOoAYk=
+		</data>
+		<key>flutter_assets/assets/sounds/ocean-orchestra.mp3</key>
+		<data>
+		avaIVz5N0YYcMXA/tNawfYX0u0Y=
+		</data>
+		<key>flutter_assets/assets/sounds/piano-orchestra.mp3</key>
+		<data>
+		prqmZ1N7hWeDOzs6NrEQo56a33o=
+		</data>
+		<key>flutter_assets/assets/sounds/pop.mp3</key>
+		<data>
+		NlE3xCtxfgeNeQPKt2bD2jjTY3g=
+		</data>
+		<key>flutter_assets/assets/sounds/relaxing-piano.mp3</key>
+		<data>
+		P3RPtbU4ah4DAAzQ7xeWch+SpzU=
+		</data>
+		<key>flutter_assets/assets/testPic.jpg</key>
+		<data>
+		ezpvdx91MBod2wogbLbPhEfvaKU=
+		</data>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<data>
 		/CUoTuPQqqdexfyOT9lpJhV+2MQ=
@@ -54,7 +134,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		f8RsCGqmn7mSN5iv5/WOwPEEsxI=
+		+qt12RTSmI+ut7UX6IalZnLROWo=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -75,14 +155,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			l2BfEdSYNXpp4G53XZ3v8d1OVMgjj35H/bPqcI7Z7lo=
+			44APeH0VyLbIv4Qe9xjhU88UmShDbaq1pUDsA8QTKXU=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			jeRVRJHB+DDjqOkOatRSD2hoAMCHxSXerHHLilUHowg=
+			TIsHg0CQXa5r8NlVlq8gvoGpG93nc6RSlQV5h3no+S4=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -96,7 +176,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			eH0WBS/Rqj+Xj/ifDN1v0/73XCfI+QjAo+WtfyEImFY=
+			kiGwfp24+TgWsYyIknQ5xiUp6sz4qP6kCz08k4DS0fo=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/AccioAnxietyManager.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			qC3iD4VKAq27wslpaipyCFKBk7YKC29s9ovyuxQ2feM=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/AccioBG.JPG</key>
@@ -106,11 +193,32 @@
 			vkAuS+pCF5zxvyWqZiZCiAPYzhVNUDn6/eaoA0UFUEs=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/AccioIconClearBG.PNG</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			9EvVezLbXIpCbT/WWbWl45uVRj0HxgJ2/oJZ3YiW74s=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/AppIcon.PNG</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Ypneo9DHcSlZ6wYA4EW7gu+S9KD0SdDrHOQtW4q1hus=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/Calendar_MoodLogBG.JPG</key>
 		<dict>
 			<key>hash2</key>
 			<data>
 			2n8C3IFBMe/TAe61XLIcLZkgPsehvf/s5PpmhIdRS9E=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/CosmicComfortLogo.PNG</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			EytTwj0Dl+Ja6J7LbMRs53LnEMJpoQUTt0FZF2PH6y4=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/CosmicComfortLogo.jpeg</key>
@@ -134,6 +242,118 @@
 			REH49a6ZoY51qY+0F4cFVDZtjCutNCOFaVFy+WPbtI4=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/SignIn.JPG</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			jlA+LCnNj8JMF2xSUlS1QxuoYd2zAwcDeDIUx3C2E7A=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/WaterRipplesBG.JPG</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Qz5Ymt7B49YXEuRWBAiAWiZp9Hi7PjGnwLv0TyO0ZHA=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/WaterTrailsBG.JPG</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			rTp0a3J8vnxK3q404N2TbzJEOi+n4daNtqA5SHysBwo=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/CuteRingtone.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zf1Aqw7yfxF2vRer2ONtZnUgh21///lGeK8cviedqyg=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/KawaRingtone.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Go7fKbZC/8fo2YyHV+n8RDSOKZ9+Ss+DKQxeKH6IrV4=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/SoftMelody.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			fShrMC++Usj9h/XbawxoS5BB+JfEw2fXii0LuR8pMhQ=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/iOnlySleepAtNight.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			d66MSs/e08Y94jhjeAed9JQCRp7BrEGO/X2M75cJMXo=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/just-relax.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			rXE7wSY6wiYhvzSyVO1dpBsB3JCQ7Y4bf+7Y0Tizxp0=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/lo-fi-track-1.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			7Ajf+eTURqg8U2dQG2CqBtY411Rm96gmvCfN+Kh++rA=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/lo-fi-track-2.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			yGwYQWmk/wjAtNUWnvThirLKNHXMldb4sU0Gc5OVfrI=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/nightRingtone.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			BfTjJfS8HrHC+eYpSCU74dh90k/UAg7YTbcGCWhp8gU=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/ocean-orchestra.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			y8a9SLiq5pKxeyVbB5MuVwOW9uiOtJQSCbGMzeLM1fU=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/piano-orchestra.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			65iqyDI8mbDqcbnsIr/cZqxjG5l5xdQY4vHmuZElx5I=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/pop.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			u6w01AcG84+tFMR+MRmnstE/iO5Rhi0VPSSxZy9NiAk=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sounds/relaxing-piano.mp3</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			A5jvgel6PItB8USgXnMOMkghCGw/NZibtLz07UihNRQ=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/testPic.jpg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			oDe8shQJopURpo0k0J+1lVKMnfO5pAAtG56D7kAAWYU=
+			</data>
+		</dict>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<dict>
 			<key>hash2</key>
@@ -152,7 +372,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			SdeG8wIGhXIU2tAs2F7wzWJuMXZBelS0+Hzg7wQY1xc=
+			grWFNfxM6xGGkSOVeBZWZUfckXb6+h9U099RTymbjuo=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
