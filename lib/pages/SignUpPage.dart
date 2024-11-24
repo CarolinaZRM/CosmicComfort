@@ -1,11 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../components/GenericComponents.dart' as components;
+import 'SignInPage.dart';
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
+  SignUpPage({super.key});
+
+  Future<void> registerUser(String username, String email, String password, BuildContext context) async {
+    try {
+
+      // Call Backend API to Save Data in MongoDB
+      final response = await http.post(
+        //Uri.parse("http://<your-backend-url>/register"),
+        Uri.parse("http://localhost:3000/user/"),
+        //Uri.parse("http://127.0.0.1:3000/user/"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "username": username,
+          "email": email,
+          "password": password,
+        }),
+      );
+      //print("Body: ${body.stri}");
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body.toString()}");
+
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration Successful.")),
+        );
+      } else if (response.statusCode == 409){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email is already registered.")),
+        );
+      } else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to save user data.")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e ."))
+      );
+    }
+  } // resgisterUser() end
+
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -25,7 +73,7 @@ class SignUpPage extends StatelessWidget {
               children: [
                 // Header
                 components.buildHeader(title: "Sign Up", context: context),
-                
+                //---
                 const SizedBox(height: 85), // Space below the title
                 
                 // Sign-in form
@@ -42,6 +90,7 @@ class SignUpPage extends StatelessWidget {
                       children: [
                         // Username TextField
                         TextField(
+                          controller: usernameController,
                           decoration: InputDecoration(
                             hintText: 'Username',
                             border: OutlineInputBorder(
@@ -55,6 +104,9 @@ class SignUpPage extends StatelessWidget {
 
                         // Email TextField
                         TextField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          autocorrect: false,
                           decoration: InputDecoration(
                             hintText: 'Email',
                             border: OutlineInputBorder(
@@ -68,6 +120,7 @@ class SignUpPage extends StatelessWidget {
                         
                         // Password TextField
                         TextField(
+                          controller: passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Password',
@@ -82,12 +135,21 @@ class SignUpPage extends StatelessWidget {
                         
                         // Sign In Button
                         ElevatedButton(
-                          onPressed: () {
-                            // TODO: Handle sign-in logic
+                          onPressed: () async {
+                            await registerUser(
+                              usernameController.text.trim(),
+                              emailController.text.trim().toLowerCase(),
+                              passwordController.text.trim(),
+                              context,
+                            );
+                            // Send user to sign in page after successful registration
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SignInPage()),
+                            );
                           },
                           child: const Text('Sign Up'),
                         ),
-                        
                       ],
                     ),
                   ),

@@ -25,6 +25,7 @@ pubspec.lock # library relate lock files
 .project
 .settings/
 .vscode/
+serviceAccountKey.json
 
 **/android/**/gradle-wrapper.jar
 .gradle/

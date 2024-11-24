@@ -90,12 +90,6 @@ class _FakeCallPageState extends State<FakeCallPage> {
                   trailingIcon: Icons.chevron_right_outlined //optional parameter!
                 ),
 
-                const components.RadioChoiceCard(
-                  icon: Icons.radio, 
-                  title: "LED Flashlight",
-                  leadingIcon: Icons.flash_on_outlined, //optional parameter
-                ),
-
                 const SizedBox(height: 20), // Space below dropdowns
 
                 // Start Call Button
