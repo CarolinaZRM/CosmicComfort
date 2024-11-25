@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import '../backend/databaseRequests/notificationDBRequest.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -121,7 +122,11 @@ class NotificationService {
     print("Notification Scheduled!");
   }
 
-  Future<void> showPeriodicNotification(int id, String title, String body) async {
+  Future<void> showPeriodicNotification(int id, String title, String body, context) async {
+    // Check if correct permissions are done
+    bool permissions = await checkAndRequestExactAlarmPermission(context);
+    if (!permissions) return;
+
     const androidDetails = AndroidNotificationDetails(
       // Channel_id and channel_name should be modified to pertain to either Selfcare or moodlog reminders
       'channel_id', 'channel_name',
@@ -147,6 +152,27 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
   
+  // get pending notifications, TODO: return values rather than print
+  void getPendingNotifications() async {
+    final List<PendingNotificationRequest> pendingNotifications =
+      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+
+    for (var notification in pendingNotifications) {
+      print('Notification ID: ${notification.id}, Title: ${notification.title}, Body: ${notification.body}');
+    }
+  }
+  
+  // Get notification permisions (selfcare reminders/moodlog reminders; yes/no)
+  Future<Map<String, dynamic>?> getNotificationPermisions(String userId) async {
+    return await fetchNotificationPermisions(userId);
+  }
+
+  // Update notification permissions
+  void updateNotificationPermissions(String userId, {bool? selfCarePerm, bool? logReminderPerm}) async {
+    await updateNotificationSettings(userId, selfCarePerm: selfCarePerm, logReminderPerm: logReminderPerm);
+  }
+
+  // -----Android Permissions-----
   Future<bool> checkAndRequestExactAlarmPermission(BuildContext context) async {
     
     final androidPlugin = flutterLocalNotificationsPlugin

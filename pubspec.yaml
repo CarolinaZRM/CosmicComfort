@@ -46,6 +46,8 @@ dependencies:
   http: ^1.0.0 # For making API requests to your backend
   flutter_local_notifications: ^18.0.1
   flutter_timezone: ^3.0.1
+  connectivity_plus: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
