@@ -45,6 +45,9 @@ class SignUpPage extends StatelessWidget {
         SnackBar(content: Text("Error: $e ."))
       );
     }
+
+    // TODO: make a post to every table with initial data
+    // Ex: Fake call table: default name, pic, etc.
   } // resgisterUser() end
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../components/GenericComponents.dart' as components;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,10 +10,19 @@ import '../main.dart';
 class SignInPage extends StatelessWidget {
   SignInPage({super.key});
 
-  bool signedIn = false;
+  // User session JWT stuff
+  Future<void> saveToken(String token) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString('authToken', token);
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
+  }
 
   Future<void> logUserIn(String username, String password, BuildContext context) async {
-    // 
+ 
     try{
       // Call Backend API to Save Data in MongoDB
       final response = await http.post(
@@ -28,8 +38,11 @@ class SignInPage extends StatelessWidget {
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body.toString()}");
 
-
       if (response.statusCode == 200) {
+        // save token after successful login
+        final data = jsonDecode(response.body);
+        await saveToken(data['token']);
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login Successful.")),
         );
@@ -40,6 +53,8 @@ class SignInPage extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (context) => const MyApp()),
         );
+
+        fetchProtectedData(context);
       } else if (response.statusCode == 404){
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Invalid username or password.")),
@@ -52,8 +67,39 @@ class SignInPage extends StatelessWidget {
       print("Error: $e");
     }
 
-    signedIn = true;
   } // end of logUserIn()
+
+  // include token in headers for future requests
+  Future<void> fetchProtectedData(BuildContext context) async {
+    try{
+      final token = await getToken();
+      if (token == null){
+        throw Exception("Token is null. User is not logged in.");
+      }
+
+      final response = await http.get(
+      Uri.parse('http://localhost:3000/user/protected-route'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+      );
+      if(response.statusCode == 200){
+        print("success! \n Protected Data: ${response.body}");
+        print("Response Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body.toString()}");
+      } else if (response.statusCode == 403){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Forbidden Access.")),
+        );
+      } else{ print("Failed to fetch protected data. Status: ${response.statusCode}");}
+  
+    } catch(e){
+      // smth
+    }
+    
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -132,11 +178,6 @@ class SignInPage extends StatelessWidget {
                               passwordController.text.trim(),
                               context,
                             );
-                            // Send user to home page after successful login
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(builder: (context) => const MyApp()),
-                            // );
                           },
                           child: const Text('Sign In'),
                         ),

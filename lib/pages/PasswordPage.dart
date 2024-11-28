@@ -1,8 +1,36 @@
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PasswordChangePage extends StatelessWidget {
   const PasswordChangePage({super.key});
+
+  Future<void> updatePassword(String password, BuildContext context) async {
+    //fr
+    final response = await http.post(
+        Uri.parse("http://localhost:3000/user/"),
+        //Uri.parse("http://127.0.0.1:3000/user/"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "password": password,
+        }),
+      );
+  
+  }
+
+  //**
+  // final response = await http.post(
+      //   Uri.parse("http://localhost:3000/user/login"),
+      //   //Uri.parse("http://127.0.0.1:3000/user/"),
+      //   headers: {"Content-Type": "application/json"},
+      //   body: jsonEncode({
+      //     "username": username,
+      //     "password": password,
+      //   }),
+      // );
+  //
+  // */
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +68,7 @@ class PasswordChangePage extends StatelessWidget {
 
                   const SizedBox(height: 20),
                   
-                  //TODO: this will be matched with DB ig
+                  //TODO: Make this so that it will fetch current password from DB, if they don't match it won't update the password
                   TextField(
                     decoration: InputDecoration(
                       hintText: 'Current Password',
@@ -54,7 +82,7 @@ class PasswordChangePage extends StatelessWidget {
                   
                   const SizedBox(height: 20),
 
-                  //TODO: this will be saved in DB
+                  //TODO: this new password will be updated in DB
                   TextField(
                     decoration: InputDecoration(
                       hintText: 'New Password',
@@ -91,6 +119,7 @@ class PasswordChangePage extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             // TODO: Handle password change logic
+                            //fr
                           },
                           child: const Text('Change Password'),
                         ),
