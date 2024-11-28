@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
-import 'dart:io' show Platform;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+// Global variable to store fake call settings
+Map<String, dynamic>? globalFakeCallSettings;
 
 class CallerIDPage extends StatefulWidget {
   const CallerIDPage({Key? key}) : super(key: key);
@@ -10,165 +14,155 @@ class CallerIDPage extends StatefulWidget {
 }
 
 class _CallerIDPageState extends State<CallerIDPage> {
-  String? os = Platform.isAndroid ? "Android" : "iOS";
-  
+  final TextEditingController _nameController = TextEditingController();
+  bool _isLoading = true; // To indicate loading state
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCallerSettings();
+  }
+
+  // Fetch settings from the database
+  Future<void> fetchCallerSettings() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:9000/fake_call/6746b179762320454d2cd3a2'));
+      if (response.statusCode == 200) {
+        setState(() {
+          globalFakeCallSettings = json.decode(response.body);
+          _nameController.text = globalFakeCallSettings?['caller_name'] ?? 'Unknown';
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to fetch settings');
+      }
+    } catch (e) {
+      print('Error fetching settings: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Update settings in the database
+  Future<void> updateCallerSettings(String newName) async {
+    if (globalFakeCallSettings != null && globalFakeCallSettings?['_id'] != null) {
+      globalFakeCallSettings?['caller_name'] = newName;
+      // Create a copy of the global settings and remove the _id
+      final Map<String, dynamic> updateData = Map.from(globalFakeCallSettings!);
+      final String id = updateData.remove('_id'); // Remove the _id field from the body
+      updateData.remove('__v');
+      try {
+        final response = await http.put(
+          Uri.parse('http://localhost:9000/fake_call/$id'), // Use _id in the URL
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(updateData), // Send body without _id
+        );
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Caller name updated successfully!')),
+          );
+        }
+      } catch (e) {
+        print('Error updating settings: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update Caller Name')),
+        );
+      }
+    } else {
+      print('No valid _id in globalFakeCallSettings');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid fake call settings ID')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       body: Stack(
         children: [
-          // Background image or gradient
+          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/Ombre.PNG'), // Gradient background
+                image: AssetImage('assets/Ombre.PNG'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10.0, 60.0, 10.0, 20.0),     
+            padding: const EdgeInsets.all(20.0),
             child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    
-                    //Header
-                    components.buildHeader(title: "CallerID", context: context),
-                    //------
-
-                    const SizedBox(height: 40), // Space below the title
-
-                    //Caller Pic and Edit button
+                    components.buildHeader(title: "Caller ID", context: context),
+                    const SizedBox(height: 40),
                     Center(
                       child: Column(
                         children: [
-                          //Picture
                           ClipOval(
                             child: Image.asset(
-                              'assets/testPic.jpg', //TODO: this will be gotten from DB
-                              width: 200,  // Same as diameter
-                              height: 200,  // Same as diameter
-                              fit: BoxFit.cover,  // Controls how the image fits inside the circle
+                              'assets/testPic.jpg',
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          //Edit
                           TextButton(
                             onPressed: () {
-                              //TODO: Action to perform when the button is pressed
-
+                              // Placeholder for editing picture
                             },
                             child: const Text(
-                              'Edit', // Button text
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 255, 255, 255), // Text color
-                              ),
-                            )
-                          )
+                              'Edit',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ),
                         ],
-                      )
-                    ),
-                    
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'Caller Name',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 255, 255, 255)
                       ),
                     ),
-
+                    const Text(
+                      'Caller Name',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
                     const SizedBox(height: 10),
-
                     TextField(
-                      controller: TextEditingController(),
+                      controller: _nameController,
                       decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.3), // Make text semi-transparent
-                        ),
-                        hintText: "Caller Name...", //TODO: this will be gotten from DB
+                        hintText: "Caller Name...",
                         filled: true,
-                        fillColor: Color.fromARGB(255, 255, 255, 255),
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      onSubmitted: (value) {
-                        //TODO: Give Functionality!
-                      },
                     ),
-
-                    const SizedBox(height: 40),
-
-                    const Text(
-                      'Preferred OS Style',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 255, 255, 255)
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await updateCallerSettings(_nameController.text);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(200, 69, 68, 121),
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        ),
+                        child: const Text('Save', style: TextStyle(fontSize: 18, color: Colors.white)),
                       ),
                     ),
-
-                    buildDropdownMenu(
-                      title: 'Default System OS',
-                      value: os,
-                      items: ['Android', 'iOS'],
-                      onChanged: (value) {
-                        setState(() {
-                          os = value;
-                        });
-                      },
-                    ),
-
-                  ]
-                )
-              
-              )
-            )
+                  ],
+                ),
+              ),
+            ),
           ),
-          
-
-
         ],
-      ),
-    );
-  }
-
-
-  // Helper method to build each dropdown menu with a white box
-  Widget buildDropdownMenu({
-    required String title,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white, // White background for the dropdown
-          labelText: title,
-          
-          floatingLabelBehavior: FloatingLabelBehavior.never, // Fixes the issue of the label moving
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        hint: Text(title), // Ensure the title shows when no value is selected
-        value: value,
-        items: items.map((String item) {
-          return DropdownMenuItem<String>(
-            value: item,
-            child: Text(item),
-          );
-        }).toList(),
-        onChanged: onChanged,
       ),
     );
   }

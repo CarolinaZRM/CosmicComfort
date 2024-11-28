@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'CallerIDPage.dart';
 import 'RingtonePage.dart';
 import 'CallTime.dart';
-import '../components/GenericComponents.dart' as components;
 import 'CallDelayPage.dart';
 import 'AndroidCallPage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+Map<String, dynamic>? globalFakeCallSettings; // Global variable
+
 class FakeCallPage extends StatefulWidget {
   const FakeCallPage({Key? key}) : super(key: key);
 
@@ -13,17 +17,45 @@ class FakeCallPage extends StatefulWidget {
 }
 
 class _FakeCallPageState extends State<FakeCallPage> {
-  // Define variables to store the dropdown selections
-  //TODO: selectedTime should be from DB
-  String selectedTime = "5";
-  String? selectedCaller;
-  String? selectedRingtone;
-  String? selectedVoice;
-  String? selectedWallpaper;
-  String? selectedMore;
+  int selectedTime = 5; // Default value, will be updated from DB
+  String contactName = "Unknown"; // Default value for contact name
+  bool isLoading = true; // Flag to show loading state
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSettingsFromDB();
+  }
+
+  // Function to fetch settings and contact name from the database
+  Future<void> fetchSettingsFromDB() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:9000/fake_call/6746b179762320454d2cd3a2'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        globalFakeCallSettings = data;
+        setState(() {
+          selectedTime = data['call_time'] ?? 5; // Default to "5" if null
+          contactName = data['caller_name'] ?? "Unknown"; // Default to "Unknown" if null
+          isLoading = false; // Data loaded successfully
+        });
+      } else {
+        throw Exception('Failed to fetch settings');
+      }
+    } catch (e) {
+      print('Error fetching settings: $e');
+      setState(() {
+        isLoading = false; // Stop loading even on error
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator()); // Show loading spinner
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -31,13 +63,13 @@ class _FakeCallPageState extends State<FakeCallPage> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/Ombre.PNG'), // Your background image path
+                image: AssetImage('assets/Ombre.PNG'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10.0, 60.0, 10.0, 20.0),            
+            padding: const EdgeInsets.fromLTRB(10.0, 60.0, 10.0, 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -48,7 +80,7 @@ class _FakeCallPageState extends State<FakeCallPage> {
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
-                        Navigator.pop(context); // Navigates back to the previous screen
+                        Navigator.pop(context);
                       },
                     ),
                     const Text(
@@ -59,72 +91,83 @@ class _FakeCallPageState extends State<FakeCallPage> {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(width: 48), // To balance the row
+                    const SizedBox(width: 48),
                   ],
                 ),
 
-                const SizedBox(height: 20), // Space below the title
+                const SizedBox(height: 20),
 
-                components.buildPageRedirectCard(
-                  icon: Icons.schedule, 
+                // Time Card
+                buildCustomCard(
+                  icon: Icons.schedule,
                   title: "Time",
-                  context: context,
-                  page: const CallTimePage(),
-                  trailingIcon: Icons.chevron_right_outlined
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CallTimePage()),
+                    ).then((_) => fetchSettingsFromDB());
+                  },
                 ),
 
-                components.buildPageRedirectCard(
-                  icon: Icons.person, 
-                  title: "Caller ID", 
-                  context: context, 
-                  page: const CallerIDPage(),
-                  trailingIcon: Icons.chevron_right_outlined
+                // Caller ID Card
+                buildCustomCard(
+                  icon: Icons.person,
+                  title: "Caller ID",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CallerIDPage()),
+                    ).then((_) => fetchSettingsFromDB());
+                  },
                 ),
 
-                // This card will redirect user to the Ringtone page
-                components.buildPageRedirectCard(
+                // Ringtone Card
+                buildCustomCard(
                   icon: Icons.music_note,
                   title: "Ringtone",
-                  context: context,
-                  page: const RingtonePage(),
-                  trailingIcon: Icons.chevron_right_outlined //optional parameter!
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RingtonePage()),
+                    ).then((_) => fetchSettingsFromDB());
+                  },
                 ),
 
-                const components.RadioChoiceCard(
-                  icon: Icons.radio, 
-                  title: "LED Flashlight",
-                  leadingIcon: Icons.flash_on_outlined, //optional parameter
-                ),
-
-                const SizedBox(height: 20), // Space below dropdowns
-
-                // Start Call Button
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Trigger fake call action
-                      if(int.parse(selectedTime) > 0){
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          //TODO: Contact Name should be from DB
-                          builder: (context) => CallDelayPage(contactName: "Hello this name is too long and will start scrolling when testing", time: int.parse(selectedTime)),
-                        ),
-                      );
-                      }
-                      else{
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            //TODO: Contact Name should be from DB
-                            builder: (context) => AndroidCallPage(contactName: "Hello this name is too long and will start scrolling when testing", waited: false),
-                          ),
-                        );
+                      if (globalFakeCallSettings != null) {
+                        bool playRingtone = globalFakeCallSettings?['ringtone'] ?? false;
+                        String? ringtoneName = globalFakeCallSettings?['ring_name'];
+
+                        if (selectedTime > 0) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CallDelayPage(
+                                contactName: contactName,
+                                time: selectedTime,
+                                playRingtone: playRingtone,
+                                ringtoneName: ringtoneName,
+                              ),
+                            ),
+                          ).then((_) => fetchSettingsFromDB());
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AndroidCallPage(
+                                contactName: contactName,
+                                waited: false,
+                              ),
+                            ),
+                          ).then((_) => fetchSettingsFromDB());
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                      backgroundColor: const Color.fromARGB(200, 69, 68, 121),
                     ),
                     child: const Text(
                       'Start Call',
@@ -132,33 +175,6 @@ class _FakeCallPageState extends State<FakeCallPage> {
                     ),
                   ),
                 ),
-
-                //TEST: CallerIDPage.dart
-                //UNCOMMENT code below until indicated section, this will add the button to test the
-                //CallIDPage, implementation for the actual callid dropdown may borrow elements from this
-                // Center(
-                //   child: ElevatedButton(
-                //     onPressed: () {
-                //       // Trigger fake call action
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //           builder: (context) => const CallerIDPage(),
-                //         ),
-                //       );
-                //     },
-                //     style: ElevatedButton.styleFrom(
-                //       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                //       backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                //     ),
-                //     child: const Text(
-                //       'Test CallerID',
-                //       style: TextStyle(fontSize: 20, color: Colors.white),
-                //     ),
-                //   ),
-                // ),
-                //-------------------END TEST CALLIDPAGE-----------------------------
-
               ],
             ),
           ),
@@ -167,36 +183,19 @@ class _FakeCallPageState extends State<FakeCallPage> {
     );
   }
 
-  // Helper function to build a dropdown menu
-  Widget _buildDropdownMenu({
-    required String title,
+  Widget buildCustomCard({
     required IconData icon,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
+    required String title,
+    required VoidCallback onTap,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white, // White background for the dropdown
-          labelText: title,
-          prefixIcon: Icon(icon),
-          floatingLabelBehavior: FloatingLabelBehavior.never, // Fixes the issue of the label moving
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        hint: Text(title), // Ensure the title shows when no value is selected
-        value: value,
-        items: items.map((String item) {
-          return DropdownMenuItem<String>(
-            value: item,
-            child: Text(item),
-          );
-        }).toList(),
-        onChanged: onChanged,
+    return Card(
+      color: Colors.white.withOpacity(0.9),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        trailing: const Icon(Icons.chevron_right_outlined),
+        onTap: onTap,
       ),
     );
   }

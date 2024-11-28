@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../components/GenericComponents.dart' as components;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+// Global variable to store the fake call settings
+Map<String, dynamic>? globalFakeCallSettings;
 
 class RingtonePage extends StatefulWidget {
   const RingtonePage({Key? key}) : super(key: key);
@@ -10,7 +15,6 @@ class RingtonePage extends StatefulWidget {
 }
 
 class _RingtonePageState extends State<RingtonePage> {
-  // List of ringtones and their corresponding file paths
   final List<String> _ringtonePaths = [
     "sounds/CuteRingtone.mp3",
     "sounds/iOnlySleepAtNight.mp3",
@@ -29,6 +33,14 @@ class _RingtonePageState extends State<RingtonePage> {
 
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _currentRingtone; // Track the currently playing ringtone
+  bool _isRingtoneEnabled = true; // State variable for ringtone toggle
+  String? _lastSelectedRingtone; // Variable to track the last selected ringtone
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSettingsFromDB();
+  }
 
   // Function to toggle play/pause for a ringtone
   void _togglePlayPause(String ringtonePath) async {
@@ -42,13 +54,65 @@ class _RingtonePageState extends State<RingtonePage> {
       await _audioPlayer.play(AssetSource(ringtonePath));
       setState(() {
         _currentRingtone = ringtonePath; // Set the currently playing ringtone
+        _lastSelectedRingtone = ringtonePath; // Update last selected ringtone
       });
+    }
+  }
+
+  // Function to fetch settings and contact name from the database
+  Future<void> fetchSettingsFromDB() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:9000/fake_call/6746b179762320454d2cd3a2'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        globalFakeCallSettings = data;
+
+        // Set the state variables based on fetched data
+        setState(() {
+          _isRingtoneEnabled = data['ringtone'] ?? true; // Default to true if not present
+          _currentRingtone = data['ring_name']; // Set current ringtone from fetched data
+          _lastSelectedRingtone = data['ring_name']; // Track last selected ringtone
+        });
+      } else {
+        throw Exception('Failed to fetch settings');
+      }
+    } catch (e) {
+      print('Error fetching settings: $e');
+      setState(() {});
+    }
+  }
+
+  // Method to update the call time in the database
+  Future<void> updateCallRingtoneInDB() async {
+    if (globalFakeCallSettings != null && globalFakeCallSettings?['_id'] != null) {
+      globalFakeCallSettings?['ringtone'] = _isRingtoneEnabled;
+
+      // If ringtone is disabled, retain the last selected ringtone
+      globalFakeCallSettings?['ring_name'] = _isRingtoneEnabled ? _currentRingtone : _lastSelectedRingtone;
+
+      // Create a copy of the global settings and remove the _id
+      final Map<String, dynamic> updateData = Map.from(globalFakeCallSettings!);
+      final String id = updateData.remove('_id'); // Remove the _id field from the body
+      updateData.remove('__v');
+
+      final response = await http.put(
+        Uri.parse('http://localhost:9000/fake_call/$id'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        print("Call ringtone updated successfully!");
+      } else {
+        print("Failed to update call time: ${response.body}");
+      }
     }
   }
 
   @override
   void dispose() {
     _audioPlayer.dispose(); // Dispose of the player when the page is closed
+    updateCallRingtoneInDB();
     super.dispose();
   }
 
@@ -72,22 +136,32 @@ class _RingtonePageState extends State<RingtonePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
+                  // Header using generic component
                   components.buildHeader(title: "Ringtone", context: context),
-                  
+
                   const SizedBox(height: 20), // Spacing below the header
 
-                  // Ringtone Radio Switch Icon
-                  const components.RadioChoiceCard(icon: Icons.radio, title: "Ringtone"),
-                  //------
+                  // Custom Toggle Switch Card for Ringtone
+                  Card(
+                    color: Colors.white.withOpacity(0.9),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.ring_volume),
+                      title: const Text("Ringtone", style: TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: Switch(
+                        value: _isRingtoneEnabled,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _isRingtoneEnabled = value; // Update switch state
+                          });
+                        },
+                        activeColor: const Color.fromARGB(255, 92, 50, 129), // Customize active switch color
+                      ),
+                    ),
+                  ),
 
-                    // Vibration Radio Switch Icon
-                  const components.RadioChoiceCard(icon: Icons.radio, title: "Vibration"),
-                  //------
-                  
-                  const SizedBox(height: 60), // Space below the title
+                  const SizedBox(height: 20), // Space below the title
 
-                 
                   const Text(
                     "Select Ringtone",
                     style: TextStyle(

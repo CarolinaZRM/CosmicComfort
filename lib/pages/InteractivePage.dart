@@ -3,7 +3,6 @@ import '../components/GenericComponents.dart' as components;
 // Separate pages for interactive modes
 import 'WaterRipplesPage.dart';
 import 'WaterTrailsPage.dart';
-import 'VibrationsPage.dart';
 import 'PopItsPage.dart';
 
 class InteractivePage extends StatelessWidget {
