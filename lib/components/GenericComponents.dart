@@ -55,6 +55,36 @@ Widget buildPageRedirectCard({
     ),
   );
 }
+
+// ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ INFO TRANSFER PAGE REDIRECT CARD ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
+// specifically for implementation made to avoid circular dependencies in ProfilePage.dart
+Widget infoTransferPageRedirectCard({
+  required String title,
+  required BuildContext context,
+  Widget? page,
+  IconData? trailingIcon,
+  VoidCallback? onTap, // Add the onTap callback.
+}) {
+  return GestureDetector(
+    onTap: onTap ?? () {
+      if (page != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
+      }
+    },
+    child: Card(
+      color: Colors.white.withOpacity(0.9),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ListTile(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        trailing: Icon(trailingIcon),
+      ),
+    ),
+  );
+}
+
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ PLACEHOLDER ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
 
 

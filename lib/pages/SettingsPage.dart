@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../pages/settings/TextIDPage.dart';
 import '../pages/InstructionsPage.dart';
+import '../notification/notifications.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
-
+  SettingsPage({super.key});
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -14,6 +14,24 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isSelfCareReminderEnabled = false;
   bool isLogReminderEnabled = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadNotificationPermissions();
+  }
+
+  Future<void> _loadNotificationPermissions() async {
+    // TODO: get user_id from loggedin user
+    final userId = "673d3790e3262ad583bced63"; // Replace with dynamic user ID retrieval
+    final data = await NotificationService().getNotificationPermisions(userId);
+    if (data != null) {
+      print('${data["self_care"]}, ${data["log_reminder"]}');
+      setState(() {
+        isSelfCareReminderEnabled = data["self_care"] ?? false;
+        
+      });
+    } 
+  }
   // State variables for Fake Chat Settings and Help dropdowns
   String selectedFakeChatOption = 'Text ID'; // Default selected option// Default selected option
 
@@ -97,16 +115,55 @@ class _SettingsPageState extends State<SettingsPage> {
           label: 'Self-care Reminders',
           value: isSelfCareReminderEnabled,
           onChanged: (value) => setState(() {
+            // TODO: get userId via login
+            String userId = "673d3790e3262ad583bced63";
+            NotificationService().updateNotificationPermissions(
+                        userId, 
+                        selfCarePerm: value,
+                        
+                      );
             isSelfCareReminderEnabled = value;
+            // unschedule notifications
+            if (!value) {
+              NotificationService().cancelAllNotifications();
+            }
           }),
+          
         ),
-        buildSwitchTile(
-          label: 'Log Reminders',
-          value: isLogReminderEnabled,
-          onChanged: (value) => setState(() {
-            isLogReminderEnabled = value;
-          }),
-        ),
+        // buildSwitchTile(
+        //   label: 'Log Reminders',
+        //   value: isLogReminderEnabled,
+        //   onChanged: (value) async {
+        //     String userId = "673d3790e3262ad583bced63";
+        //     bool permissions = await NotificationService().checkAndRequestExactAlarmPermission(context, showPopup: true);
+        //     print(permissions);
+        //     if (permissions) {
+        //       NotificationService().updateNotificationPermissions(
+        //                   userId, 
+        //                   logReminderPerm: value
+        //                 );
+        //       setState(() {
+        //         isLogReminderEnabled = value;
+        //       });
+        //       if (value) {
+        //         NotificationService().showPeriodicNotification(
+        //                   2,
+        //                   "Mood Log", 
+        //                   "Remember to log your mood!",
+        //                   context,
+        //                   isSelfCareReminderEnabled,
+        //                   "daily",
+        //                   "log_reminder"                        
+        //                 );
+        //       }
+        //       else if (!value) {
+        //         NotificationService().cancelNotification(2);
+        //       }
+
+        //     } 
+            
+        //   },
+        // ),
       ],
     );
   }

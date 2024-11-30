@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'pages/SettingsPage.dart'; // Import the settings page file
 import 'pages/ResourcesPage.dart';
 import 'pages/AccioPage.dart';
@@ -10,16 +11,20 @@ import 'pages/BreathingPage.dart';
 import 'pages/CalendarPage.dart';
 import 'pages/SelfCareRemindersPage.dart';
 import 'pages/SignInPage.dart';
-
-//Notifications:
+import 'pages/SignUpPage.dart';
 import './notification/notifications.dart';
 
-void main() async {
-  // Modified so that the application screen doesn't change orientation
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async{
+  // Ensure Flutter binding is initialized
+  WidgetsFlutterBinding.ensureInitialized(); 
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  print('Firebase initialized successfully');
 
   await NotificationService().initializeNotifications();
 
+  // Modified so that the application screen doesn't change orientation
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp, // force screen to always be in portrait mode
   ]).then((_) {
@@ -81,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Navigate to the Settings page
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SettingsPage()),
+                          MaterialPageRoute(builder: (context) => SettingsPage()),
                         );
                       },
                     ),
@@ -221,10 +226,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const Spacer(),
 
-                // Bottom navigation with fake call/chat, night mode, and user profile
+                // Bottom navigation with fake call, accio, and user profile
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.call, size: 40, color: Colors.white),
+                      onPressed: () {
+                        /// Navigate to Fake Call Page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const FakeCallPage()),
+                          );
+                      },
+                    ),
+
                     GestureDetector(
                     onTap: () {
                       // Navigate to Accio Page
@@ -243,38 +259,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                     IconButton(
-                      icon: const Icon(Icons.chat, size: 40, color: Colors.white),
-                      onPressed: () {
-                        // Fake Chat
-                      },
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // Action
-                      },
-                      child: Image.asset(
-                        'assets/CosmicComfortLogo.PNG', // Image path
-                        width: 60,
-                        height: 60,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.call, size: 40, color: Colors.white),
-                      onPressed: () {
-                        /// Navigate to Fake Call Page
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const FakeCallPage()),
-                          );
-                      },
-                    ),
-                    IconButton(
                       icon: const Icon(Icons.person, size: 40, color: Colors.white),
                       onPressed: () {
                         //Navigate User profile
                         Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const SignInPage()),
+                            MaterialPageRoute(builder: (context) => SignInPage()),
                           );
                       },
                     ),

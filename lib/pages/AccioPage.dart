@@ -23,7 +23,7 @@ class AccioPage extends StatelessWidget {
             child: Column(
               children: [
                 // Header from GenericComponents
-                components.buildHeader(title: "ACCIO", context: context),
+                components.buildHeader(title: " ", context: context),
                 const SizedBox(height: 20),
 
                 // Scrollable image section

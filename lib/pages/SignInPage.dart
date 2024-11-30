@@ -1,13 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../components/GenericComponents.dart' as components;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'SignUpPage.dart';
 import 'ProfilePage.dart';
+import '../main.dart';
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({super.key});
+  SignInPage({super.key});
+
+  // User session JWT stuff
+  Future<void> saveToken(String token) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString('authToken', token);
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
+  }
+
+  Future<void> logUserIn(String username, String password, BuildContext context) async {
+ 
+    try{
+      // Call Backend API to Save Data in MongoDB
+      final response = await http.post(
+        Uri.parse("http://localhost:3000/user/login"),
+        //Uri.parse("http://127.0.0.1:3000/user/"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "username": username,
+          "password": password,
+        }),
+      );
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body.toString()}");
+
+      if (response.statusCode == 200) {
+        // save token after successful login
+        final data = jsonDecode(response.body);
+        await saveToken(data['token']);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login Successful.")),
+        );
+        // Wait for 1 second before navigating to the next screen so that snackBar message can show
+        await Future.delayed(const Duration(seconds: 1));
+        // Send user to home page after successful login
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MyApp()),
+        );
+
+        fetchProtectedData(context);
+      } else if (response.statusCode == 404){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Invalid username or password.")),
+        );
+      }
+    } catch (e){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e ."))
+      );
+      print("Error: $e");
+    }
+
+  } // end of logUserIn()
+
+  // include token in headers for future requests
+  Future<void> fetchProtectedData(BuildContext context) async {
+    try{
+      final token = await getToken();
+      if (token == null){
+        throw Exception("Token is null. User is not logged in.");
+      }
+
+      final response = await http.get(
+      Uri.parse('http://localhost:3000/user/protected-route'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+      );
+      if(response.statusCode == 200){
+        print("success! \n Protected Data: ${response.body}");
+        print("Response Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body.toString()}");
+      } else if (response.statusCode == 403){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Forbidden Access.")),
+        );
+      } else{ print("Failed to fetch protected data. Status: ${response.statusCode}");}
+  
+    } catch(e){
+      // smth
+    }
+    
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -44,6 +142,7 @@ class SignInPage extends StatelessWidget {
                       children: [
                         // Username TextField
                         TextField(
+                          controller: usernameController,
                           decoration: InputDecoration(
                             hintText: 'Username',
                             border: OutlineInputBorder(
@@ -57,6 +156,7 @@ class SignInPage extends StatelessWidget {
                         
                         // Password TextField
                         TextField(
+                          controller: passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Password',
@@ -73,6 +173,11 @@ class SignInPage extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             // TODO: Handle sign-in logic
+                            logUserIn(
+                              usernameController.text.trim(),
+                              passwordController.text.trim(),
+                              context,
+                            );
                           },
                           child: const Text('Sign In'),
                         ),
@@ -86,7 +191,7 @@ class SignInPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SignUpPage(),
+                                builder: (context) => SignUpPage(),
                               ),
                             );
                           },

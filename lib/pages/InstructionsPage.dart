@@ -60,9 +60,7 @@ class InstructionsPage extends StatelessWidget {
                             """Interactive Mode consists of 4 features; they serve as digital fidget toys to help pass time or work as a distraction. 
 Water Ripples: By tapping on the screen, water ripples will appear wherever it has been tapped.
 
-Water Trails: By dragging your finger along the screen, water trails will follow your finger. 
-
-Vibrations: Vibrations will be triggered upon tapping on the screen.   
+Water Trails: By dragging your finger along the screen, water trails will follow your finger.  
 
 Pop Its: A digital popit. Pop and unpop the bubbles by tapping them.""",
                           ),
@@ -138,19 +136,6 @@ Pop Its: A digital popit. Pop and unpop the bubbles by tapping them.""",
                           ),
                           SizedBox(height: 10), // Add spacing
                           
-                          // Fake Chat Feature
-                          Text(
-                            'Fake Chat Feature',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'This feature offers predetermined text conversations in a WhatsApp-like format for users to use as a distraction in public or anxiety-inducing situations. It is a simulated, prompt-based text conversation.'
-                          ),
-                          SizedBox(height: 10), // Add spacing
                         ],
                       ),
                     ),
