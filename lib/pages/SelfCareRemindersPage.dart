@@ -137,30 +137,95 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                     title: "Drink Water",
                     icon: Icons.local_drink,
                     isSelected: drinkWaterSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        drinkWaterSelected = value;
-                      });
+                    onChanged: (value) async {
+                      NotificationService notifService = NotificationService();
+                      bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
+                      if (permission) {
+                        if (value) {
+                          
+                          notifService.createNotifications( 
+                            title: 'Drink Water', 
+                            body: 'Remember to stay hydrated!', 
+                            startTime: TimeOfDay(hour:7+4, minute:0), //+4 since its formated in UTC-4
+                            date: DateTime.now(), 
+                            context: context, 
+                            notifPermission: isSelfCareReminderEnabled, 
+                            intervalType: "hourly",
+                            interval: 3
+                          );
+
+                        } else {
+                          // Cancel "Drink Water" notifications
+                          notifService.cancelNotificationsByTitle("Drink Water");
+                        }
+                        
+                        setState(() {
+                          drinkWaterSelected = value;
+                        });
+                      }
                     },
                   ),
                   buildSelfCareCard(
                     title: "Eat Something",
                     icon: Icons.fastfood,
                     isSelected: eatSomethingSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        eatSomethingSelected = value;
-                      });
+                    onChanged: (value) async {
+                      NotificationService notifService = NotificationService();
+                      bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
+                      if (permission) {
+                        if (value) {
+                          notifService.createNotifications(
+                            //id: 1, 
+                            title: 'Eat Something', 
+                            body: 'Keep up with your meals!', 
+                            startTime: TimeOfDay(hour:7+4, minute: 0), 
+                            date: DateTime.now(), 
+                            context: context, 
+                            notifPermission: isSelfCareReminderEnabled, 
+                            intervalType: "hourly",
+                            interval: 5
+                          );
+
+                        } else {
+                          // Cancel "Eat Something" notifications
+                          notifService.cancelNotificationsByTitle("Eat Something");
+                        }
+                        setState(() {
+                          eatSomethingSelected = value;
+                        });
+                      }
                     },
                   ),
                   buildSelfCareCard(
-                    title: "Take Medication",
-                    icon: Icons.medical_services,
+                    title: "Log your mood",
+                    icon: Icons.menu_book,
                     isSelected: takeMedicationSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        takeMedicationSelected = value;
-                      });
+                    onChanged: (value) async {
+                      NotificationService notifService = NotificationService();
+                      bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
+                      if (permission) {
+                        if (value) {
+                          
+                          notifService.createNotifications(
+                            //id: 1, 
+                            title: 'Log your mood', 
+                            body: 'Keep track of how you\'re feeling!', 
+                            startTime: TimeOfDay(hour:19+4, minute: 0), 
+                            date: DateTime.now(), 
+                            context: context, 
+                            notifPermission: isSelfCareReminderEnabled, 
+                            intervalType: "daily",
+                            interval: 1
+                          );
+
+                        } else {
+                          // Cancel "Log your mood" notifications
+                          notifService.cancelNotificationsByTitle("Log your mood");
+                        }
+                        setState(() {
+                          takeMedicationSelected = value;
+                        });
+                      }
                     },
                   ),
                   buildCustomRemindersCard(),
@@ -168,70 +233,78 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
 
 
                   // Notification Testing!------------------------------------------
-                  ElevatedButton(
-                    onPressed: () {
-                      // Create instant notification
-                      if (isSelfCareReminderEnabled){
-                        NotificationService().showNotification(
-                          0, 
-                          "New Notification", 
-                          "Test Notification"
-                        );
-                      }
-                      // Test edit notification perms
-                      // String userId = "673d3790e3262ad583bced63";
-                      // NotificationService().updateNotificationPermissions(
-                      //   userId, 
-                      //   // selfCarePerm: false,
-                      //   logReminderPerm: true
-                      // );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                    ),
-                    child: const Text(
-                      'Test instant permissions',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
-                  // Schedule a notification
-                  ElevatedButton(
-                    onPressed: () {
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // Create instant notification
                       
-                      final DateTime scheduledTime = DateTime.now().add(const Duration(minutes: 1));
-                      //var scheduledTime = tz.local;
-                      if (isSelfCareReminderEnabled){
-                        NotificationService().scheduleNotification(
-                          1,
-                          "New Scheduled Notification", 
-                          "Test Notification",
-                          scheduledTime, 
-                          context
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                    ),
-                    child: const Text(
-                      'Test Schedule Notifications',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
-
+                  //     NotificationService().showNotification(
+                  //       0, 
+                  //       "New Notification", 
+                  //       "Test Notification",
+                  //       isSelfCareReminderEnabled
+                  //     );
+                      
+                  //     // Test edit notification perms
+                  //     // String userId = "673d3790e3262ad583bced63";
+                  //     // NotificationService().updateNotificationPermissions(
+                  //     //   userId, 
+                  //     //   // selfCarePerm: false,
+                  //     //   logReminderPerm: true
+                  //     // );
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  //     backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                  //   ),
+                  //   child: const Text(
+                  //     'Test instant permissions',
+                  //     style: TextStyle(fontSize: 20, color: Colors.white),
+                  //   ),
+                  // ),
+                  // Schedule a notification
+                  // // --------------------------
+                  // ElevatedButton(
+                  //   onPressed: () {
+                      
+                  //     final DateTime scheduledTime = DateTime.now().add(const Duration(minutes: 1));
+                  //     //var scheduledTime = tz.local;
+                      
+                  //     NotificationService().scheduleNotification(
+                  //       1,
+                  //       "New Scheduled Notification", 
+                  //       "Test Notification",
+                  //       scheduledTime, 
+                  //       context,
+                  //       isSelfCareReminderEnabled
+                  //     );
+                      
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  //     backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                  //   ),
+                  //   child: const Text(
+                  //     'Test Schedule Notifications',
+                  //     style: TextStyle(fontSize: 20, color: Colors.white),
+                  //   ),
+                  // ),
+                  // // --------------------------
                   // Test Periodic notifications
                   ElevatedButton(
-                    onPressed: () {
-                      if (isSelfCareReminderEnabled){
-                        NotificationService().showPeriodicNotification(
+                    onPressed: () async {
+                      NotificationService notifService = NotificationService();
+                      bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
+                      if (permission) {
+                        notifService.showPeriodicNotification(
                           2,
                           "New Periodic Notification", 
                           "Test Notification",
-                          context                         
+                          context,
+                          isSelfCareReminderEnabled,
+                          "every_minute",
+                          "test_channel"                        
                         );
-                      }
+                      }  
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -242,12 +315,22 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
-
-                  // Test notification permisions
+                  // // --------------------------
+                  // Test create notifications
                   ElevatedButton(
                     onPressed: () {
                       // Now user user_id
-                      NotificationService().getNotificationPermisions('673d3790e3262ad583bced63');
+                      NotificationService NotifService = NotificationService();
+                      NotifService.createNotifications(
+                        //id: 1, 
+                        title: 'Test', 
+                        body: 'Test schedule notifications', 
+                        startTime: TimeOfDay.now(), 
+                        date: DateTime.now(), 
+                        context: context, 
+                        notifPermission: isSelfCareReminderEnabled, 
+                        intervalType: "daily"
+                      );
                     
                     },
                     style: ElevatedButton.styleFrom(
@@ -255,7 +338,7 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                       backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
                     ),
                     child: const Text(
-                      'Test Notification Permisions',
+                      'Test create notifications',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
@@ -279,7 +362,7 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                   ElevatedButton(
                     onPressed: () {
                       
-                      NotificationService().getPendingNotifications();
+                      NotificationService().getPendingNotifications(printOut: true);
                     
                     },
                     style: ElevatedButton.styleFrom(

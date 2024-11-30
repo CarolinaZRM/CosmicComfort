@@ -3,8 +3,8 @@ import 'dart:convert'; // For JSON encoding/decoding
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 // TODO: Should be replaced by heroku url when deploying
-//String baseURL = "https://cosmiccomfort-8656a323f8dc.herokuapp.com"; //for android emulator
-String baseURL = "http://10.0.2.2:3000";
+String baseURL = "https://cosmiccomfort-8656a323f8dc.herokuapp.com"; 
+//String baseURL = "http://10.0.2.2:3000"; //for android emulator
 // String baseURL = "http://127.0.0.1:3000";
 // String baseURL = "http://localhost:3000";
 
