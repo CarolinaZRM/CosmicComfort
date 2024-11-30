@@ -129,20 +129,13 @@ class _ProfilePageState extends State<ProfilePage>{
       MaterialPageRoute(builder: (context) => const UsernameChangePage()),
     );
 
-    print("Returned from UsernamePage.dart with $newUsername");
-
     if (newUsername != null && newUsername is String) {
-
-      // Re-fetch username from updated token
-      // _fetchUsername(); 
-      // print("fetched username: $_fetchUsername()");
       setState(() {
         username = newUsername;
       });
-      print("Username udpdated in UIL $username");
+      print("Udpdated Username $username");
       await _fetchUsername();
       setState(() {});
-      print("Fetched latest username with _fetchUsername().");
     }
   }
 
@@ -183,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage>{
                   // TODO: Display Name should replace this text
                   Text(
                     username,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.w900
@@ -235,13 +228,6 @@ class _ProfilePageState extends State<ProfilePage>{
                   trailingIcon: Icons.arrow_forward_ios
                   ),
 
-                  // Redirect user to page where they can change their username
-                  // components.buildPageRedirectCard(
-                  // title: "Change Username",
-                  // context: context,
-                  // page: const UsernameChangePage(),
-                  // trailingIcon: Icons.arrow_forward_ios
-                  // ),
                   components.infoTransferPageRedirectCard(
                     title: "Change Username",
                     context: context,
