@@ -30,7 +30,7 @@ class _FakeCallPageState extends State<FakeCallPage> {
   // Function to fetch settings and contact name from the database
   Future<void> fetchSettingsFromDB() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:9000/fake_call/6746b179762320454d2cd3a2'));
+      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/6746b179762320454d2cd3a2'));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         globalFakeCallSettings = data;

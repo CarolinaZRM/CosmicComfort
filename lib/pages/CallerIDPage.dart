@@ -26,7 +26,7 @@ class _CallerIDPageState extends State<CallerIDPage> {
   // Fetch settings from the database
   Future<void> fetchCallerSettings() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:9000/fake_call/6746b179762320454d2cd3a2'));
+      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/6746b179762320454d2cd3a2'));
       if (response.statusCode == 200) {
         setState(() {
           globalFakeCallSettings = json.decode(response.body);
@@ -54,7 +54,7 @@ class _CallerIDPageState extends State<CallerIDPage> {
       updateData.remove('__v');
       try {
         final response = await http.put(
-          Uri.parse('http://localhost:9000/fake_call/$id'), // Use _id in the URL
+          Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/$id'), // Use _id in the URL
           headers: {'Content-Type': 'application/json'},
           body: json.encode(updateData), // Send body without _id
         );
