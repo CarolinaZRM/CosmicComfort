@@ -58,7 +58,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
             ),
             // Foreground content
             SafeArea(
-              child: SingleChildScrollView(  // Wrap everything inside a SingleChildScrollView
+              child: SingleChildScrollView( // Wrap everything inside a SingleChildScrollView
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
@@ -109,9 +109,11 @@ class _MoodLogPageState extends State<MoodLogPage> {
                             const SizedBox(height: 10),
                             Wrap(
                               spacing: 10,
+                              runSpacing: 6, // Add spacing between rows
+                              alignment: WrapAlignment.start, // Align items to the start of the main axis
+                              runAlignment: WrapAlignment.start, // Align items to the start of the cross axis
                               children: [
                                 ...moodList.map((moodData) => moodRadioButton(moodData['mood'], moodData['color'])).toList(),
-                                const SizedBox(height: 10),
                                 customMoodButton(), // Button to add a new custom mood
                               ],
                             ),
@@ -197,27 +199,38 @@ class _MoodLogPageState extends State<MoodLogPage> {
       onTap: () {
         _openCustomMoodDialog();
       },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(  //for circle
-            width: 19,
-            height: 19,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(color: Colors.black),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Add padding for spacing
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
             ),
-            child: const Center(
-              child: Icon(Icons.add, color: Colors.black, size: 14), // Plus icon for custom mood
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: Colors.black),
+              ),
+              child: const Icon(Icons.add, color: Colors.black, size: 16),
             ),
-          ),
-          const SizedBox(width: 8), // Spacing between icon and label
-          const Text(
-            'Custom',
-            style: TextStyle(color: Colors.black),
-          ),
-        ],
+            const SizedBox(width: 8),
+            const Text(
+              'Custom',
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
