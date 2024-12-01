@@ -3,6 +3,8 @@ import 'package:audioplayers/audioplayers.dart';
 import '../components/GenericComponents.dart' as components;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 // Global variable to store the fake call settings
 Map<String, dynamic>? globalFakeCallSettings;
@@ -59,10 +61,32 @@ class _RingtonePageState extends State<RingtonePage> {
     }
   }
 
+  Future<String?> getUserIdFromToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('authToken');
+
+      if (token == null) {
+        return null;
+      }
+
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['id'];
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Function to fetch settings and contact name from the database
   Future<void> fetchSettingsFromDB() async {
     try {
-      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/6746b179762320454d2cd3a2'));
+      final userID = await getUserIdFromToken(); // Await the async function
+        if (userID == null) {
+          print('No user ID found in token.');
+          return;
+      }
+
+      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         globalFakeCallSettings = data;
@@ -84,6 +108,12 @@ class _RingtonePageState extends State<RingtonePage> {
 
   // Method to update the call time in the database
   Future<void> updateCallRingtoneInDB() async {
+    final userID = await getUserIdFromToken(); // Await the async function
+        if (userID == null) {
+          print('No user ID found in token.');
+          return;
+      }
+
     if (globalFakeCallSettings != null && globalFakeCallSettings?['_id'] != null) {
       globalFakeCallSettings?['ringtone'] = _isRingtoneEnabled;
 
@@ -92,11 +122,11 @@ class _RingtonePageState extends State<RingtonePage> {
 
       // Create a copy of the global settings and remove the _id
       final Map<String, dynamic> updateData = Map.from(globalFakeCallSettings!);
-      final String id = updateData.remove('_id'); // Remove the _id field from the body
+      updateData.remove('_id'); // Remove the _id field from the body
       updateData.remove('__v');
 
       final response = await http.put(
-        Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/$id'),
+        Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(updateData),
       );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 // Global variable to store fake call settings
 Map<String, dynamic>? globalFakeCallSettings;
@@ -15,7 +17,6 @@ class CallerIDPage extends StatefulWidget {
 
 class _CallerIDPageState extends State<CallerIDPage> {
   final TextEditingController _nameController = TextEditingController();
-  bool _isLoading = true; // To indicate loading state
 
   @override
   void initState() {
@@ -23,38 +24,63 @@ class _CallerIDPageState extends State<CallerIDPage> {
     fetchCallerSettings();
   }
 
+  Future<String?> getUserIdFromToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('authToken');
+
+      if (token == null) {
+        return null;
+      }
+
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['id'];
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Fetch settings from the database
   Future<void> fetchCallerSettings() async {
     try {
-      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/6746b179762320454d2cd3a2'));
+      final userID = await getUserIdFromToken(); // Await the async function
+        if (userID == null) {
+          print('No user ID found in token.');
+          return;
+      }
+
+      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'));
       if (response.statusCode == 200) {
         setState(() {
           globalFakeCallSettings = json.decode(response.body);
           _nameController.text = globalFakeCallSettings?['caller_name'] ?? 'Unknown';
-          _isLoading = false;
         });
       } else {
         throw Exception('Failed to fetch settings');
       }
     } catch (e) {
       print('Error fetching settings: $e');
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
   // Update settings in the database
   Future<void> updateCallerSettings(String newName) async {
+    final userID = await getUserIdFromToken(); // Await the async function
+      if (userID == null) {
+        print('No user ID found in token.');
+        return;
+    }
     if (globalFakeCallSettings != null && globalFakeCallSettings?['_id'] != null) {
       globalFakeCallSettings?['caller_name'] = newName;
       // Create a copy of the global settings and remove the _id
       final Map<String, dynamic> updateData = Map.from(globalFakeCallSettings!);
-      final String id = updateData.remove('_id'); // Remove the _id field from the body
+      updateData.remove('_id'); // Remove the _id field from the body
       updateData.remove('__v');
+      // String userID = "673d3790e3262ad583bced63";
+      
       try {
         final response = await http.put(
-          Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/$id'), // Use _id in the URL
+          Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'), // Use _id in the URL
           headers: {'Content-Type': 'application/json'},
           body: json.encode(updateData), // Send body without _id
         );
@@ -80,9 +106,6 @@ class _CallerIDPageState extends State<CallerIDPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
 
     return Scaffold(
       body: Stack(

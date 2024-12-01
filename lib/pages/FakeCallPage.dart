@@ -6,6 +6,8 @@ import 'CallDelayPage.dart';
 import 'AndroidCallPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 Map<String, dynamic>? globalFakeCallSettings; // Global variable
 
@@ -27,34 +29,59 @@ class _FakeCallPageState extends State<FakeCallPage> {
     fetchSettingsFromDB();
   }
 
-  // Function to fetch settings and contact name from the database
-  Future<void> fetchSettingsFromDB() async {
-    try {
-      final response = await http.get(Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/6746b179762320454d2cd3a2'));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        globalFakeCallSettings = data;
-        setState(() {
-          selectedTime = data['call_time'] ?? 5; // Default to "5" if null
-          contactName = data['caller_name'] ?? "Unknown"; // Default to "Unknown" if null
-          isLoading = false; // Data loaded successfully
-        });
-      } else {
-        throw Exception('Failed to fetch settings');
-      }
-    } catch (e) {
-      print('Error fetching settings: $e');
-      setState(() {
-        isLoading = false; // Stop loading even on error
-      });
+  Future<String?> getUserIdFromToken() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+
+    if (token == null) {
+      return null;
     }
+
+    final decodedToken = JwtDecoder.decode(token);
+    return decodedToken['id'];
+  } catch (e) {
+    return null;
   }
+}
+
+// Function to fetch settings and contact name from the database
+Future<void> fetchSettingsFromDB() async {
+  try {
+    final userID = await getUserIdFromToken(); // Await the async function
+    if (userID == null) {
+      print('No user ID found in token.');
+      return;
+    }
+
+    final response = await http.get(
+      Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      globalFakeCallSettings = data;
+      setState(() {
+        selectedTime = data['call_time'] ?? 5; // Default to "5" if null
+        contactName = data['caller_name'] ?? "Unknown"; // Default to "Unknown" if null
+        isLoading = false; // Data loaded successfully
+      });
+    } else {
+      throw Exception('Failed to fetch settings: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching settings: $e');
+    setState(() {
+      isLoading = false; // Stop loading even on error
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator()); // Show loading spinner
-    }
+    // if (isLoading) {
+    //   return const Center(child: CircularProgressIndicator()); // Show loading spinner
+    // }
 
     return Scaffold(
       body: Stack(
