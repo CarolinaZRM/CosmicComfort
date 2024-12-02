@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'SignInPage.dart';
 import 'PasswordPage.dart';
 import 'UsernamePage.dart';
+import 'ProfilePicPage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -19,11 +20,13 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage>{
 
   String username = "Loading...";
+  String profilePicturePath = 'assets/astronaut.jpg'; // This will be the default profile picture
 
   @override
   void initState(){
     super.initState();
     _fetchUsername();
+    _fetchUserData();
   }
 
   // log user out and return to sign in page
@@ -138,13 +141,50 @@ class _ProfilePageState extends State<ProfilePage>{
       setState(() {});
     }
   }
+  // fetch profile picture from DB
+  Future<void> _fetchUserData() async {
+    // -------- token stuff ----------
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null){ return;}
+    // grab user ID
+    final decodedToken = JwtDecoder.decode(token);
+    final userId = decodedToken['id'];
 
-  // // Determine if user is currently logged in
-  // Future<bool> isUserLoggedIn() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final token = prefs.getString('authToken');
-  //   return token != null;
-  // }
+    try {
+      final response = await http.get(
+        Uri.parse("http://localhost:3000/user/$userId"),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          profilePicturePath = data['profilePicture'] ?? 'assets/astronaut.jpg';
+        });
+        // save profile picture path locally
+        prefs.setString('profilePicturePath', profilePicturePath);
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  } // end of _fetchUserData()
+
+  void _navigateToProfilePicPage() async {
+    final selectedPath = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePicPage()),
+    );
+
+    if (selectedPath != null){
+      setState(() {
+        profilePicturePath = selectedPath;
+      });
+      final prefs = await SharedPreferences.getInstance();
+      // save locally
+      prefs.setString('profilePicturePath', selectedPath); 
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -173,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage>{
 
                   const SizedBox(height: 40), // Space below the title
                   
-                  // TODO: Display Name should replace this text
+                  // User's username is displayed
                   Text(
                     username,
                     style: const TextStyle(
@@ -195,9 +235,9 @@ class _ProfilePageState extends State<ProfilePage>{
                         // TODO: pic will be gotten from DB
                         ClipOval(
                           child: Image.asset(
-                            'assets/WaterRipplesBG.JPG',
-                            width: 200,  // Same as diameter
-                            height: 200,  // Same as diameter
+                            profilePicturePath,
+                            width: 200,
+                            height: 200,
                             fit: BoxFit.cover,  // Controls how the image fits inside the circle
                           ),
                         ),
@@ -205,13 +245,16 @@ class _ProfilePageState extends State<ProfilePage>{
                         // blank space between profile picture and edit
                         const SizedBox(height: 7),
                         // TODO: this will allow user to add/change profile picture. 
-                        // Functionality needed.
-                        const Text("Edit",
-                          style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold
-                          )
+                        // Functionality needed. 
+                        GestureDetector(
+                          onTap: _navigateToProfilePicPage,
+                          child: const Text("Edit",
+                            style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold
+                            )
+                          ),
                         ),
                       ],
                     )

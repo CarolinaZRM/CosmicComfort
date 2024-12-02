@@ -20,6 +20,7 @@ class SignUpPage extends StatelessWidget {
           "username": username,
           "email": email,
           "password": password,
+          "profilePicture": "assets/astronaut.jpg" // default profile picture is astronaut
         }),
       );
       //print("Body: ${body.stri}");

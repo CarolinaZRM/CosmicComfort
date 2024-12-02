@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ HEADER BAR ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
 Widget buildHeader({
@@ -86,7 +90,79 @@ Widget infoTransferPageRedirectCard({
 }
 
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ PLACEHOLDER ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
+/** This function is for replacing a profile or caller ID picture. Do note, by selectedPath it is meant
+ * that you must have a list with the image paths in your file.
+ * Ex:  final List<String> picturePaths = [
+    'assets/astronaut.jpg',
+    'assets/car.jpg',
+    'assets/cat.jpg',
+    'assets/earth.jpg',
+    'assets/moon.jpg',
+    'assets/puppy.jpg'
+  ];
+ * 
+ * also, make sure that in whatever file you're using this in, you import the following:
+ * import 'package:jwt_decoder/jwt_decoder.dart';
+ * import 'package:shared_preferences/shared_preferences.dart';
+ * import 'package:http/http.dart' as http;
+ * import 'dart:convert';
+ */
+///
+Future<void> testUpdateProfilePicture(BuildContext context, String selectedPath) async {
+    // -------- token stuff ----------
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
 
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Unable to update profile picture: No token found.")),
+      );
+      print("this is the token: $token");
+      return;
+    }
+    // grab userID
+    final decodedToken = JwtDecoder.decode(token);
+    final userId = decodedToken['id'];
+
+    print("This is the userID: $userId");
+    print("This is decoded token: $decodedToken");
+    // -------- token stuff ----------
+
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Unable to update profile picture: No user ID found.")),
+      );
+      print("This is the userID: $userId");
+      return;
+    }
+
+    try {
+      //
+      final response = await http.patch(
+      Uri.parse('http://localhost:3000/user/update-profpic/$userId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'profilePicture': selectedPath}),
+      );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile picture updated!")),
+      );
+      Navigator.pop(context, selectedPath); // Return selected path to profile for UI update
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to update profile picture.")),
+      );
+    }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  } // end of updateProfilePicture()
 
 
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ SHOW INFO CARD ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
