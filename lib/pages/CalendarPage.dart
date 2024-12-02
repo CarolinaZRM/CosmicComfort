@@ -55,12 +55,11 @@ class _CalendarPageState extends State<CalendarPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://localhost:3000/calendar/user/$userID'),
+        Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/calendar//user/$userID'),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print(data);
         setState(() {
           // globalCalendar = data;
           setGlobalCalendar(data);
@@ -73,7 +72,6 @@ class _CalendarPageState extends State<CalendarPage> {
       _showError("Failed to load calendar data. Please try again.");
       print('Error fetching calendar: $e');
     }
-    // print(globalCalendar);
   }
 
   void populateDateColors(Map<String, dynamic> data) async {
@@ -152,8 +150,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               ),
                             ).then((_) {
                               // Refetch data when returning from MoodLogPage
-                              print('refetching');
-                              Future.delayed(const Duration(seconds: 3), () {
+                              Future.delayed(const Duration(seconds: 1), () {
                                 fetchSettingsFromDB();
                               });
                             });

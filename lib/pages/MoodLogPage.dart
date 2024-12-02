@@ -53,6 +53,10 @@ class _MoodLogPageState extends State<MoodLogPage> {
 
     // Initialize mood, color, and description based on globalCalendar
     _initializeMoodLog();
+
+    moodList = (globalCalendar?['mood_list'] as List<dynamic>)
+    .map((item) => Map<String, String>.from(item))
+    .toList();
   }
 
   @override
@@ -81,11 +85,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
         setState(() {
           _selectedMood = matchedEntry['mood'] ?? _selectedMood;
           _selectedColor = Color(int.parse((matchedEntry['color'] ?? '0xFFFFFFFF').replaceFirst('#', '0x')));
-          // _selectedColor = Color(int.parse(matchedEntry['color'] ?? '0xFFFFFFFF'));
           _thoughtsController.text = matchedEntry['description'] ?? '';
-          // print(moodList);
-          // moodList = globalCalendar?['mood_list'];
-          // print(moodList);
         });
       } else {
         // Assign default values
@@ -126,8 +126,6 @@ class _MoodLogPageState extends State<MoodLogPage> {
       return isSameDate(entryDate, selectedDate);
     });
 
-    // print(_selectedColor);
-
     Map<String, dynamic> newEntry = {
       'date': selectedDate.toIso8601String(),
       'color': '#${_selectedColor.value.toRadixString(16).padLeft(8, '0').toUpperCase()}',
@@ -145,9 +143,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
 
     // Save back to the globalCalendar
     globalCalendar!['date_colors'] = entries;
-
-    // Optionally log for debugging
-    // print('Updated globalCalendar: ${globalCalendar}');
+    globalCalendar!['mood_list'] = moodList;
 
     updateCalendar(globalCalendar);
   }
@@ -158,7 +154,6 @@ class _MoodLogPageState extends State<MoodLogPage> {
     if (globalCalendar != null && globalCalendar?['_id'] != null) {
 
       final Map<String, dynamic> updateData = Map.from(newCalendar!);
-      // print(updateData);
       updateData.remove('_id'); // Remove the _id field from the body
       updateData.remove('__v');
       for (var entry in updateData['date_colors']) {
@@ -169,7 +164,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
       }
 
       final response = await http.put(
-        Uri.parse('http://localhost:3000/calendar/user/$userID'),
+        Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/calendar/user/$userID'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(updateData),
       );
@@ -261,15 +256,28 @@ class _MoodLogPageState extends State<MoodLogPage> {
                               runAlignment: WrapAlignment.start, // Align items to the start of the cross axis
                               children: [
                                 // ...moodList.map((moodData) => moodRadioButton(moodData['mood'], moodData['color'])).toList(),
-                                // customMoodButton(), // Button to add a new custom mood
                                 ...moodList.map((moodData) {
                                   String? mood = moodData['mood'];
-                                  String? colorString = moodData['color'];
+                                  dynamic colorValue = moodData['color'];
+
+                                  Color parsedColor;
+                                  if (colorValue is String) {
+                                    // Parse color string
+                                    parsedColor = Color(int.parse(colorValue.replaceFirst('#', '0x')));
+                                  } else if (colorValue is Color) {
+                                    // If already a Color object
+                                    parsedColor = colorValue;
+                                  } else {
+                                    // Fallback to a default color
+                                    parsedColor = Colors.grey;
+                                  }
+
                                   return moodRadioButton(
                                     mood ?? 'Unknown', // Default mood if null
-                                    Color(int.parse(colorString!.replaceFirst('#', '0x'))) // Convert color string to Color
+                                    parsedColor // Parsed or default color
                                   );
                                 }).toList(),
+                                customMoodButton(), // Button to add a new custom mood
                               ],
                             ),
                           ],
@@ -429,9 +437,12 @@ class _MoodLogPageState extends State<MoodLogPage> {
               onPressed: () {
                 setState(() {
                   if (_customMoodController.text.isNotEmpty) {
+                    // Format the color as a hexadecimal string
+                    String colorHex = '#${_customColor.value.toRadixString(16).padLeft(8, '0').toUpperCase()}';
+
                     moodList.add({
                       'mood': _customMoodController.text,
-                      'color': _customColor.toString(),
+                      'color': colorHex,
                     });
                     _customMoodController.clear(); // Clear the input for next time
                     _customColor = Colors.black; // Reset color picker
