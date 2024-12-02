@@ -1,11 +1,15 @@
+import 'package:cosmiccomfort/pages/CalendarPage.dart';
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
 import 'package:intl/intl.dart'; // Import intl package
 import 'package:flutter_colorpicker/flutter_colorpicker.dart'; // Import the color picker package
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class MoodLogPage extends StatefulWidget {
-  const MoodLogPage({super.key, this.date});
+  const MoodLogPage({super.key, this.date, this.globalCalendar});
   final DateTime? date;
+  final Map<String, dynamic>? globalCalendar; // Global variable
 
   @override
   _MoodLogPageState createState() => _MoodLogPageState();
@@ -13,26 +17,169 @@ class MoodLogPage extends StatefulWidget {
 
 class _MoodLogPageState extends State<MoodLogPage> {
   String _selectedMood = 'Happy'; // Default mood selection
+  Color _selectedColor = Colors.yellow; // Default mood color
   TextEditingController _thoughtsController = TextEditingController(); // Controller for text input
   DateTime selectedDate = DateTime.now();
 
   // For custom mood feature
-  List<Map<String, dynamic>> moodList = [
-    {'mood': 'Happy', 'color': Colors.yellow},
-    {'mood': 'Sick', 'color': Colors.green},
-    {'mood': 'Sad', 'color': Colors.blue},
-    {'mood': 'Tired', 'color': Colors.grey},
-    {'mood': 'Angry', 'color': Colors.red},
-    {'mood': 'Anxious', 'color': Colors.orange},
-    {'mood': 'Average', 'color': Colors.purple},
+  // List<Map<String, dynamic>> moodList = [
+  //   {'mood': 'Happy', 'color': const Color(0xFFFFEB3B)},
+  //   {'mood': 'Sick', 'color': const Color(0xFF4CAF50)},
+  //   {'mood': 'Sad', 'color': const Color(0xFF2196F3)},
+  //   {'mood': 'Tired', 'color': const Color(0xFF9E9E9E)},
+  //   {'mood': 'Angry', 'color': const Color(0xFFF44336)},
+  //   {'mood': 'Anxious', 'color': const Color(0xFFFF9800)},
+  //   {'mood': 'Average', 'color': const Color(0xFF9C27B0)},
+  // ];
+  List<Map<String, String>> moodList = [
+    { "mood": "Happy", "color": "#FFFFEB3B"},
+    { "mood": "Sick", "color": "#FF4CAF50"},
+    { "mood": "Sad", "color": "#FF2196F3"},
+    { "mood": "Tired", "color": "#FF9E9E9E"},
+    { "mood": "Angry", "color": "#FFF44336"},
+    { "mood": "Anxious", "color": "#FFFF9800"},
+    { "mood": "Average", "color": "#FF9C27B0"}
   ];
-  Color _customColor = Colors.black; // Initial color for custom mood
+
+  Color _customColor = Colors.pink; // Initial color for custom mood
   TextEditingController _customMoodController = TextEditingController(); // Controller for custom mood name
 
   @override
   void initState() {
     super.initState();
+
+    // Use the provided date or default to today
     selectedDate = widget.date ?? selectedDate;
+
+    // Initialize mood, color, and description based on globalCalendar
+    _initializeMoodLog();
+  }
+
+  @override
+  void dispose() {
+    _saveMoodLog();
+    _thoughtsController.dispose(); // Dispose the text controller to free up resources
+    _customMoodController.dispose();
+    super.dispose();
+  }
+
+  void _initializeMoodLog() {
+    if (globalCalendar != null && globalCalendar!.containsKey('date_colors')) {
+      List<Map<String, dynamic>> entries = List<Map<String, dynamic>>.from(globalCalendar!['date_colors']);
+
+      // Check if the selected date is in the globalCalendar
+      Map<String, dynamic>? matchedEntry = entries.firstWhere(
+        (entry) {
+          DateTime entryDate = DateTime.parse(entry['date']); // Ensure date parsing
+          return isSameDate(entryDate, selectedDate);
+        },
+        orElse: () => {},
+      );
+
+      if (matchedEntry.isNotEmpty) {
+        // Assign the values from the matched entry
+        setState(() {
+          _selectedMood = matchedEntry['mood'] ?? _selectedMood;
+          _selectedColor = Color(int.parse((matchedEntry['color'] ?? '0xFFFFFFFF').replaceFirst('#', '0x')));
+          // _selectedColor = Color(int.parse(matchedEntry['color'] ?? '0xFFFFFFFF'));
+          _thoughtsController.text = matchedEntry['description'] ?? '';
+          // print(moodList);
+          // moodList = globalCalendar?['mood_list'];
+          // print(moodList);
+        });
+      } else {
+        // Assign default values
+        _setDefaultValues();
+      }
+    } else {
+      // Assign default values if no globalCalendar is available
+      _setDefaultValues();
+    }
+  }
+
+  void _setDefaultValues() {
+    setState(() {
+      _selectedMood = 'Happy';
+      _selectedColor = const Color(0xFFFFEB3B);
+      _thoughtsController.text = '';
+    });
+  }
+
+  // Helper function to compare dates ignoring time
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+  }
+
+  void _saveMoodLog() {
+    if (globalCalendar == null) return;
+
+    // Ensure the globalCalendar has the `entries` key
+    if (!globalCalendar!.containsKey('date_colors')) {
+      globalCalendar!['date_colors'] = [];
+    }
+
+    List<Map<String, dynamic>> entries = List<Map<String, dynamic>>.from(globalCalendar!['date_colors']);
+
+    // Check if an entry for the selected date exists
+    int existingIndex = entries.indexWhere((entry) {
+      DateTime entryDate = DateTime.parse(entry['date']);
+      return isSameDate(entryDate, selectedDate);
+    });
+
+    // print(_selectedColor);
+
+    Map<String, dynamic> newEntry = {
+      'date': selectedDate.toIso8601String(),
+      'color': '#${_selectedColor.value.toRadixString(16).padLeft(8, '0').toUpperCase()}',
+      'mood': _selectedMood,
+      'description': _thoughtsController.text,
+    };
+
+    if (existingIndex != -1) {
+      // Update the existing entry
+      entries[existingIndex] = newEntry;
+    } else {
+      // Add a new entry
+      entries.add(newEntry);
+    }
+
+    // Save back to the globalCalendar
+    globalCalendar!['date_colors'] = entries;
+
+    // Optionally log for debugging
+    // print('Updated globalCalendar: ${globalCalendar}');
+
+    updateCalendar(globalCalendar);
+  }
+
+  // Method to update the calendar in the database
+  Future<void> updateCalendar(Map<String, dynamic>? newCalendar) async {
+    final userID = newCalendar?['user_id'];
+    if (globalCalendar != null && globalCalendar?['_id'] != null) {
+
+      final Map<String, dynamic> updateData = Map.from(newCalendar!);
+      // print(updateData);
+      updateData.remove('_id'); // Remove the _id field from the body
+      updateData.remove('__v');
+      for (var entry in updateData['date_colors']) {
+        entry.remove('_id'); // Remove the '_id' attribute
+      }
+      for (var entry in updateData['mood_list']) {
+        entry.remove('_id'); // Remove the '_id' attribute
+      }
+
+      final response = await http.put(
+        Uri.parse('http://localhost:3000/calendar/user/$userID'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        print("Call time updated successfully!");
+      } else {
+        print("Failed to update call time: ${response.body}");
+      }
+    }
   }
 
   @override
@@ -113,8 +260,16 @@ class _MoodLogPageState extends State<MoodLogPage> {
                               alignment: WrapAlignment.start, // Align items to the start of the main axis
                               runAlignment: WrapAlignment.start, // Align items to the start of the cross axis
                               children: [
-                                ...moodList.map((moodData) => moodRadioButton(moodData['mood'], moodData['color'])).toList(),
-                                customMoodButton(), // Button to add a new custom mood
+                                // ...moodList.map((moodData) => moodRadioButton(moodData['mood'], moodData['color'])).toList(),
+                                // customMoodButton(), // Button to add a new custom mood
+                                ...moodList.map((moodData) {
+                                  String? mood = moodData['mood'];
+                                  String? colorString = moodData['color'];
+                                  return moodRadioButton(
+                                    mood ?? 'Unknown', // Default mood if null
+                                    Color(int.parse(colorString!.replaceFirst('#', '0x'))) // Convert color string to Color
+                                  );
+                                }).toList(),
                               ],
                             ),
                           ],
@@ -181,6 +336,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
           onChanged: (String? value) {
             setState(() {
               _selectedMood = value!;
+              _selectedColor = color; //implement function
             });
           },
           activeColor: color, // Assign the color to the active state
@@ -275,7 +431,7 @@ class _MoodLogPageState extends State<MoodLogPage> {
                   if (_customMoodController.text.isNotEmpty) {
                     moodList.add({
                       'mood': _customMoodController.text,
-                      'color': _customColor,
+                      'color': _customColor.toString(),
                     });
                     _customMoodController.clear(); // Clear the input for next time
                     _customColor = Colors.black; // Reset color picker

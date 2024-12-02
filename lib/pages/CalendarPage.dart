@@ -20,7 +20,7 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
 
-  final Map<DateTime, Color> dateColors = {}; // Updated to start empty and populate dynamically
+  final Map<DateTime, Color> dateColors = {}; // Dynamic date-color map
 
   @override
   void initState() {
@@ -28,14 +28,16 @@ class _CalendarPageState extends State<CalendarPage> {
     fetchSettingsFromDB(); // Fetch initial calendar data from the database
   }
 
+  void setGlobalCalendar(Map<String, dynamic>? newCalendar) {
+    globalCalendar = newCalendar;
+  }
+
   Future<String?> getUserIdFromToken() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('authToken');
 
-      if (token == null) {
-        return null;
-      }
+      if (token == null) return null;
 
       final decodedToken = JwtDecoder.decode(token);
       return decodedToken['id'];
@@ -44,48 +46,54 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  // Function to fetch calendar data from the database
   Future<void> fetchSettingsFromDB() async {
     try {
       final userID = await getUserIdFromToken();
       if (userID == null) {
-        print('No user ID found in token.');
+        _showError("User ID not found. Please log in again.");
         return;
       }
+
       final response = await http.get(
         Uri.parse('http://localhost:3000/calendar/user/$userID'),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        globalCalendar = data;
-
+        print(data);
         setState(() {
-          populateDateColors(data); // Update `dateColors` with data from the server
+          // globalCalendar = data;
+          setGlobalCalendar(data);
+          populateDateColors(data); // Update dateColors with server data
         });
       } else {
         throw Exception('Failed to fetch calendar: ${response.statusCode}');
       }
     } catch (e) {
+      _showError("Failed to load calendar data. Please try again.");
       print('Error fetching calendar: $e');
+    }
+    // print(globalCalendar);
+  }
+
+  void populateDateColors(Map<String, dynamic> data) async {
+    if (data.containsKey('date_colors')) {
+      final fetchedColors = data['date_colors'] as List;
+
+      fetchedColors.forEach((entry) {
+        final date = DateTime.parse(entry['date']);
+        final colorString = entry['color'] as String;
+
+        final colorValue = int.parse(colorString.replaceFirst('#', ''), radix: 16);
+        dateColors[date] = Color(0xFF000000 | colorValue); // Ensure alpha channel is set
+      });
     }
   }
 
-  // Function to populate dateColors from fetched data
-  void populateDateColors(Map<String, dynamic> data) {
-    if (data.containsKey('dateColors')) {
-      final fetchedColors = data['dateColors'] as List;
-
-      // Convert server data into the `dateColors` map
-      for (var entry in fetchedColors) {
-        final date = DateTime.parse(entry['date']);
-        final colorString = entry['color'] as String;
-        
-        // Remove the # prefix before parsing
-        final colorValue = int.parse(colorString.replaceFirst('#', ''), radix: 16);
-        dateColors[date] = Color(0xFF000000 | colorValue); // Ensure the alpha channel is set
-      }
-    }
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+    );
   }
 
   @override
@@ -113,49 +121,53 @@ class _CalendarPageState extends State<CalendarPage> {
 
                 // Calendar with rounded corners and white background
                 Padding(
-                  padding: const EdgeInsets.all(8.0), // Add some padding around the calendar
+                  padding: const EdgeInsets.all(8.0),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                    borderRadius: BorderRadius.circular(20),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white, // Background color
-                        borderRadius: BorderRadius.circular(20), // Same radius as ClipRRect
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: TableCalendar(
                         firstDay: DateTime(2020),
                         lastDay: DateTime(2030),
                         focusedDay: _focusedDay,
                         calendarFormat: CalendarFormat.month,
-                        availableCalendarFormats: const { // Restrict formats to only month
+                        availableCalendarFormats: const {
                           CalendarFormat.month: 'Month',
                         },
-                        selectedDayPredicate: (day) {
-                          return isSameDay(_selectedDay, day);
-                        },
+                        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                         onDaySelected: (selectedDay, focusedDay) {
-                          if (selectedDay == _selectedDay) {
+                          if (selectedDay != _selectedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                            });
+                          } else {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => MoodLogPage(date: selectedDay),
                               ),
-                            );
+                            ).then((_) {
+                              // Refetch data when returning from MoodLogPage
+                              print('refetching');
+                              Future.delayed(const Duration(seconds: 3), () {
+                                fetchSettingsFromDB();
+                              });
+                            });
                           }
-                          setState(() {
-                            _selectedDay = selectedDay;
-                            _focusedDay = focusedDay;
-                          });
                         },
                         calendarBuilders: CalendarBuilders(
-                          // Builder for default day cells with conditional coloring
                           defaultBuilder: (context, day, focusedDay) {
                             final color = dateColors[day];
                             return color != null
                                 ? Container(
-                                    margin: const EdgeInsets.all(6), // Align to default circle's margins
+                                    margin: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: color, // Apply specific color
+                                      color: color,
                                     ),
                                     alignment: Alignment.center,
                                     child: Text(
