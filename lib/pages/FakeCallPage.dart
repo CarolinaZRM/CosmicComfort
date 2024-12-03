@@ -72,8 +72,6 @@ class _FakeCallPageState extends State<FakeCallPage> {
           picture = data['profile_picture'];
           ringtone = data['ringtone'];
           ringName = data['ring_name'];
-          print(ringtone);
-          print(ringName);
         });
       } else {
         throw Exception('Failed to fetch settings: ${response.statusCode}');
