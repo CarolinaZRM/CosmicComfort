@@ -3,9 +3,11 @@ import 'package:marquee/marquee.dart';
 import 'package:flutter/material.dart';
 
 class AndroidCallPage extends StatefulWidget {
-  const AndroidCallPage({Key? key, this.waited, this.contactName}) : super(key: key);
+  const AndroidCallPage({Key? key, this.waited, this.contactName, this.profilePicture}) : super(key: key);
   final String? contactName;
   final bool? waited;
+  final String? profilePicture;
+
   @override
   State<AndroidCallPage> createState() => _AndroidCallPageState();
 }
@@ -18,6 +20,8 @@ class _AndroidCallPageState extends State<AndroidCallPage> {
   bool waited = false;
   Timer? _timer;
   bool shouldScroll = false;
+  String? picture;
+
 
   @override
   void initState() {
@@ -25,6 +29,8 @@ class _AndroidCallPageState extends State<AndroidCallPage> {
     startCallTimer();
     waited = widget.waited ?? false;
     contact = widget.contactName ?? "Unkown Caller";
+    picture = widget.profilePicture ?? 'assets/astronaut.jpg';
+
     //Account for names with only spaces
     contact = contact.trim();
     if( contact == "" ){
@@ -142,7 +148,7 @@ class _AndroidCallPageState extends State<AndroidCallPage> {
               // Profile Picture
               ClipOval(
                 child: Image.asset(
-                  'assets/testPic.jpg', // Replace with your caller's image
+                  picture.toString(),
                   width: 120,
                   height: 120,
                   fit: BoxFit.cover,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
 
-class ProfilePicPage extends StatelessWidget {
-  ProfilePicPage({super.key});
+class FakeCallPicture extends StatelessWidget {
+  FakeCallPicture({super.key});
 
   final List<String> picturePaths = [
     'assets/astronaut.jpg',
@@ -32,19 +32,14 @@ class ProfilePicPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Header
-                components.buildHeader(title: "Profile Picture", context: context),
-                //------
-
+                // Header
+                components.buildHeader(title: "Fake Call Picture", context: context),
                 const SizedBox(height: 40), // Space below the title
                 
                 const Text(
-                  "Select your preferred profile picture:",
-                  style: TextStyle(
-                      color: Colors.white
-                  )
+                  "Select your preferred fake call picture:",
+                  style: TextStyle(color: Colors.white),
                 ),
-
                 const SizedBox(height: 12),
 
                 Expanded(
@@ -53,24 +48,25 @@ class ProfilePicPage extends StatelessWidget {
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 10
+                      mainAxisSpacing: 10,
                     ),
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          // Handle picture selection
-                          // updateProfilePicture(context, picturePaths[index]);
-                          components.testUpdateProfilePicture(context, picturePaths[index]);
-                          
+                          // Return the selected picture path and pop back
+                          Navigator.pop(context, picturePaths[index]);
                         },
-                        child: Image.asset(picturePaths[index]),
+                        child: Image.asset(
+                          picturePaths[index],
+                          fit: BoxFit.cover,
+                        ),
                       );
                     },
                   ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

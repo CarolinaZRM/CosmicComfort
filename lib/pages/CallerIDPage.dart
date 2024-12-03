@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'FakeCallPicture.dart';
 import '../components/GenericComponents.dart' as components;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -7,6 +8,14 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 // Global variable to store fake call settings
 Map<String, dynamic>? globalFakeCallSettings;
+final List<String> picturePaths = [
+  'assets/astronaut.jpg',
+  'assets/car.jpg',
+  'assets/cat.jpg',
+  'assets/earth.jpg',
+  'assets/moon.jpg',
+  'assets/puppy.jpg'
+];
 
 class CallerIDPage extends StatefulWidget {
   const CallerIDPage({Key? key}) : super(key: key);
@@ -17,6 +26,7 @@ class CallerIDPage extends StatefulWidget {
 
 class _CallerIDPageState extends State<CallerIDPage> {
   final TextEditingController _nameController = TextEditingController();
+  String profilePicturePath = 'assets/astronaut.jpg'; // This will be the default profile picture
 
   @override
   void initState() {
@@ -54,6 +64,7 @@ class _CallerIDPageState extends State<CallerIDPage> {
         setState(() {
           globalFakeCallSettings = json.decode(response.body);
           _nameController.text = globalFakeCallSettings?['caller_name'] ?? 'Unknown';
+          profilePicturePath = globalFakeCallSettings?['profile_picture'];
         });
       } else {
         throw Exception('Failed to fetch settings');
@@ -72,11 +83,11 @@ class _CallerIDPageState extends State<CallerIDPage> {
     }
     if (globalFakeCallSettings != null && globalFakeCallSettings?['_id'] != null) {
       globalFakeCallSettings?['caller_name'] = newName;
+
       // Create a copy of the global settings and remove the _id
       final Map<String, dynamic> updateData = Map.from(globalFakeCallSettings!);
       updateData.remove('_id'); // Remove the _id field from the body
       updateData.remove('__v');
-      // String userID = "673d3790e3262ad583bced63";
       
       try {
         final response = await http.put(
@@ -103,6 +114,25 @@ class _CallerIDPageState extends State<CallerIDPage> {
       );
     }
   }
+
+  void _navigateToProfilePicPage() async {
+    final selectedPath = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FakeCallPicture()),
+    );
+
+    if (selectedPath != null){
+      setState(() {
+        profilePicturePath = selectedPath;
+      });
+      // final prefs = await SharedPreferences.getInstance();
+      // // save locally
+      // prefs.setString('profilePicturePath', selectedPath); 
+      globalFakeCallSettings?['profile_picture'] = profilePicturePath;
+      // updateCallerSettings(globalFakeCallSettings?['caller_name']);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +163,7 @@ class _CallerIDPageState extends State<CallerIDPage> {
                         children: [
                           ClipOval(
                             child: Image.asset(
-                              'assets/testPic.jpg',
+                              profilePicturePath,
                               width: 200,
                               height: 200,
                               fit: BoxFit.cover,
@@ -142,6 +172,7 @@ class _CallerIDPageState extends State<CallerIDPage> {
                           TextButton(
                             onPressed: () {
                               // Placeholder for editing picture
+                              _navigateToProfilePicPage();
                             },
                             child: const Text(
                               'Edit',

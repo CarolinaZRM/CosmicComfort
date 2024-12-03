@@ -4,12 +4,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'AndroidCallPage.dart';
 
 class CallDelayPage extends StatefulWidget {
-  const CallDelayPage({Key? key, this.contactName, this.time, this.playRingtone = false, this.ringtoneName}) : super(key: key);
+  const CallDelayPage({Key? key, this.contactName, this.time, this.playRingtone = false, this.ringtoneName, this.profilePicture}) : super(key: key);
   
   final String? contactName;
   final int? time;
   final bool playRingtone;
   final String? ringtoneName;
+  final String? profilePicture;
 
   @override
   State<CallDelayPage> createState() => _CallDelayPageState();
@@ -21,6 +22,7 @@ class _CallDelayPageState extends State<CallDelayPage> {
   String contact = '';
   Timer? _timer;
   late AudioPlayer _audioPlayer;
+  String? picture;
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _CallDelayPageState extends State<CallDelayPage> {
     startCallTimer();
     contact = widget.contactName ?? "Unknown Caller";
     timeLimit = widget.time ?? 0;
+    picture = widget.profilePicture ?? 'assets/astronaut.jpg';
+
 
     // Start ringtone playback if enabled
     if (widget.playRingtone && widget.ringtoneName != null) {
@@ -60,7 +64,7 @@ class _CallDelayPageState extends State<CallDelayPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => AndroidCallPage(contactName: contact, waited: true),
+              builder: (context) => AndroidCallPage(contactName: contact, waited: true, profilePicture: picture),
             ),
           );
         }

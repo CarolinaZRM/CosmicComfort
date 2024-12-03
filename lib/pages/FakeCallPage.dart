@@ -22,6 +22,9 @@ class _FakeCallPageState extends State<FakeCallPage> {
   int selectedTime = 5; // Default value, will be updated from DB
   String contactName = "Unknown"; // Default value for contact name
   bool isLoading = true; // Flag to show loading state
+  String picture = 'assets/astronaut.jpg';
+  bool ringtone = true;
+  String ringName = 'sounds/CuteRingtone.mp3';
 
   @override
   void initState() {
@@ -30,58 +33,61 @@ class _FakeCallPageState extends State<FakeCallPage> {
   }
 
   Future<String?> getUserIdFromToken() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authToken');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('authToken');
 
-    if (token == null) {
+      if (token == null) {
+        return null;
+      }
+
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['id'];
+    } catch (e) {
       return null;
     }
-
-    final decodedToken = JwtDecoder.decode(token);
-    return decodedToken['id'];
-  } catch (e) {
-    return null;
   }
-}
 
-// Function to fetch settings and contact name from the database
-Future<void> fetchSettingsFromDB() async {
-  try {
-    final userID = await getUserIdFromToken(); // Await the async function
-    if (userID == null) {
-      print('No user ID found in token.');
-      return;
-    }
+  // Function to fetch settings and contact name from the database
+  Future<void> fetchSettingsFromDB() async {
+    try {
+      final userID = await getUserIdFromToken(); // Await the async function
+      if (userID == null) {
+        print('No user ID found in token.');
+        return;
+      }
 
-    final response = await http.get(
-      Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'),
-    );
+      final response = await http.get(
+        Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call/user/$userID'),
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      globalFakeCallSettings = data;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        globalFakeCallSettings = data;
+        print(data);
+        setState(() {
+          selectedTime = data['call_time'] ?? 5; // Default to "5" if null
+          contactName = data['caller_name'] ?? "Unknown"; // Default to "Unknown" if null
+          isLoading = false; // Data loaded successfully
+          picture = data['profile_picture'];
+          ringtone = data['ringtone'];
+          ringName = data['ring_name'];
+          print(ringtone);
+          print(ringName);
+        });
+      } else {
+        throw Exception('Failed to fetch settings: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching settings: $e');
       setState(() {
-        selectedTime = data['call_time'] ?? 5; // Default to "5" if null
-        contactName = data['caller_name'] ?? "Unknown"; // Default to "Unknown" if null
-        isLoading = false; // Data loaded successfully
+        isLoading = false; // Stop loading even on error
       });
-    } else {
-      throw Exception('Failed to fetch settings: ${response.statusCode}');
     }
-  } catch (e) {
-    print('Error fetching settings: $e');
-    setState(() {
-      isLoading = false; // Stop loading even on error
-    });
   }
-}
 
   @override
   Widget build(BuildContext context) {
-    // if (isLoading) {
-    //   return const Center(child: CircularProgressIndicator()); // Show loading spinner
-    // }
 
     return Scaffold(
       body: Stack(
@@ -156,16 +162,24 @@ Future<void> fetchSettingsFromDB() async {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const RingtonePage()),
-                    ).then((_) => fetchSettingsFromDB());
+                    ).then((_) {
+                        // Refetch data when returning from MoodLogPage
+                        Future.delayed(const Duration(seconds: 1), () {
+                          fetchSettingsFromDB();
+                        });
+                      });
                   },
                 ),
+
 
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
                       if (globalFakeCallSettings != null) {
-                        bool playRingtone = globalFakeCallSettings?['ringtone'] ?? false;
-                        String? ringtoneName = globalFakeCallSettings?['ring_name'];
+                        // bool playRingtone = globalFakeCallSettings?['ringtone'] ?? false;
+                        // String? ringtoneName = globalFakeCallSettings?['ring_name'];
+                        // bool playRingtone = ringtone;
+                        // String ringtoneName = ringName;
 
                         if (selectedTime > 0) {
                           Navigator.push(
@@ -174,8 +188,9 @@ Future<void> fetchSettingsFromDB() async {
                               builder: (context) => CallDelayPage(
                                 contactName: contactName,
                                 time: selectedTime,
-                                playRingtone: playRingtone,
-                                ringtoneName: ringtoneName,
+                                playRingtone: ringtone,
+                                ringtoneName: ringName,
+                                profilePicture: picture,
                               ),
                             ),
                           ).then((_) => fetchSettingsFromDB());
@@ -186,6 +201,7 @@ Future<void> fetchSettingsFromDB() async {
                               builder: (context) => AndroidCallPage(
                                 contactName: contactName,
                                 waited: false,
+                                profilePicture: picture
                               ),
                             ),
                           ).then((_) => fetchSettingsFromDB());
