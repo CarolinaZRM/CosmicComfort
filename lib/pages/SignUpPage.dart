@@ -26,6 +26,12 @@ class SignUpPage extends StatelessWidget {
       //print("Body: ${body.stri}");
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body.toString()}");
+      final id = jsonDecode(response.body);
+      final userID = id["_id"];
+      print("User ID: ${id["_id"]}");
+      final stringUserID = userID.toString();
+      // initialize default values in other tables for each user
+      components.defaultUserSettings(stringUserID, context);
 
 
       if (response.statusCode == 201) {
@@ -45,10 +51,9 @@ class SignUpPage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e ."))
       );
+      print("error in signUpPage.dart: $e");
     }
 
-    // TODO: make a post to every table with initial data
-    // Ex: Fake call table: default name, pic, etc.
   } // resgisterUser() end
 
 

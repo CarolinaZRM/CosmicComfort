@@ -248,4 +248,92 @@ NOT USING LEADING ICON:
 ),
  */
 
+// ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ DEFAULT VALUES POST METHOD ∘₊✧──────✧₊∘∘₊✧──────✧₊∘
+// this function is for creating initial instances of every required table for each
+// user. It makes a POST to every table with initial data.
+Future <void> defaultUserSettings(String userID, BuildContext context) async {
+    // -------- Account Settings ----------
+    try {
+      final accSettingsResponse = await http.post(
+        Uri.parse("http://localhost:3000/account_settings/"),
+        //Uri.parse("http://127.0.0.1:3000/user/"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "user_id": userID,
+          "theme": "dark",
+          "font_size": 707,
+          "self_care": false, 
+          "log_reminder": false,
+        }),
+      );
+      if (accSettingsResponse.statusCode == 201) {
+        print("Default Account Settings applied successfully.");
+
+      } else{
+        print("Failed to save default calendar values.");
+
+      }
+    } catch (e) {
+      print("Account Settings Error: $e .");
+    }
+
+    // -------- Calendar ----------
+    try {
+      final calendarResponse = await http.post(
+        Uri.parse("http://localhost:3000/calendar/"),
+        //Uri.parse("http://127.0.0.1:3000/user/"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "user_id": userID,
+          "mood_list": [
+            //
+            { "mood": "Happy", "color": "#FFFFEB3B"},
+            { "mood": "Sick", "color": "#FF4CAF50"},
+            { "mood": "Sad", "color": "#FF2196F3"},
+            { "mood": "Tired", "color": "#FF9E9E9E"},
+            { "mood": "Angry", "color": "#FFF44336"},
+            { "mood": "Anxious", "color": "#FFFF9800"},
+            { "mood": "Average", "color": "#FF9C27B0"}
+          ],
+          "date_colors": [],
+        }),
+      );
+      if (calendarResponse.statusCode == 201) {
+        print("Default Calendar values applied successfully.");
+
+      } else{
+        print("Failed to save default calendar values.");
+
+      }
+    } catch (e) {
+      print("Calendar Error: $e .");
+    }
+
+    // -------- Fake Call ----------
+    try {
+      final fakeCallResponse = await http.post(
+        Uri.parse("http://localhost:3000/fake_call"),
+        //Uri.parse("http://127.0.0.1:3000/user/"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "user_id": userID,
+          "caller_name": "Unknown",
+          "call_time": 5,
+          "ringtone": true, 
+          "ring_name": "sounds/CuteRingtone.mp3",
+          "profile_picture": "assets/austronaut.jpg",
+        }),
+      );
+      if (fakeCallResponse.statusCode == 201) {
+        print("Default Fake Call values applied successfully.");
+
+       } else{
+        print("Failed to save default Fake Call values.");
+    
+      }
+    } catch (e) {
+      print("Fake Call Error: $e .");
+    }
+  }
+
 // ∘₊✧──────✧₊∘∘₊✧──────✧₊∘ PLACEHOLDER ∘₊✧──────✧₊∘∘₊✧──────✧₊∘

@@ -232,7 +232,6 @@ class _ProfilePageState extends State<ProfilePage>{
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // profile pic goes here
-                        // TODO: pic will be gotten from DB
                         ClipOval(
                           child: Image.asset(
                             profilePicturePath,
@@ -244,8 +243,7 @@ class _ProfilePageState extends State<ProfilePage>{
 
                         // blank space between profile picture and edit
                         const SizedBox(height: 7),
-                        // TODO: this will allow user to add/change profile picture. 
-                        // Functionality needed. 
+                        
                         GestureDetector(
                           onTap: _navigateToProfilePicPage,
                           child: const Text("Edit",
