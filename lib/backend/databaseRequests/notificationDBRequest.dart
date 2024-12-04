@@ -20,48 +20,6 @@ Future<void> checkConnectivity() async {
   }
 }
 
-// TODO: implement to save reminders on db
-// Future<void> sendData() async {
-//   final response = await http.post(
-//     Uri.parse('https://jsonplaceholder.typicode.com/posts'),
-//     headers: {'Content-Type': 'application/json'},
-//     body: json.encode({
-//       'title': 'Flutter HTTP',
-//       'body': 'Learning how to make HTTP requests in Flutter.',
-//       'userId': 1,
-//     }),
-//   );
-
-//   if (response.statusCode == 201) {
-//     // Successfully created resource
-//     print('Response: ${response.body}');
-//   } else {
-//     // Handle error
-//     print('Failed to post data: ${response.statusCode}');
-//   }
-// }
-
-// TODO: implement to update notifications
-// Future<void> updateData(int id) async {
-//   final response = await http.put(
-//     Uri.parse('https://jsonplaceholder.typicode.com/posts/$id'),
-//     headers: {'Content-Type': 'application/json'},
-//     body: json.encode({
-//       'title': 'Updated Title',
-//       'body': 'Updated body content.',
-//       'userId': 1,
-//     }),
-//   );
-
-//   if (response.statusCode == 200) {
-//     print('Updated data: ${response.body}');
-//   } else {
-//     print('Failed to update data: ${response.statusCode}');
-//   }
-// }
-
-
-
 Future<void> updateNotificationSettings(String userId, {bool? selfCarePerm, bool? logReminderPerm}) async {
   dynamic jsonBody = {
       "theme": "light",
@@ -80,6 +38,20 @@ Future<void> updateNotificationSettings(String userId, {bool? selfCarePerm, bool
   } else {
     print("Failed to update user permisions");
   }
+}
+
+Future<http.Response> createDBNotification(String userId, {required dynamic jsonData}) async {
+  final response = await http.post(
+    Uri.parse("$baseURL/reminders/"),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode(jsonData),
+  );
+  if (response.statusCode == 201) {
+    print("Created reminder!");
+  } else {
+    print("${response.statusCode} Failed to create reminder: ${response.body}");
+  }
+  return response;
 }
 
 Future<Map<String, dynamic>?> fetchNotificationPermisions(String userId) async {

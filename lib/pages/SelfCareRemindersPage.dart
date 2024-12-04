@@ -114,6 +114,7 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Container(
@@ -290,74 +291,74 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                   // ),
                   // // --------------------------
                   // Test Periodic notifications
-                  ElevatedButton(
-                    onPressed: () async {
-                      NotificationService notifService = NotificationService();
-                      bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
-                      if (permission) {
-                        notifService.showPeriodicNotification(
-                          2,
-                          "New Periodic Notification", 
-                          "Test Notification",
-                          context,
-                          isSelfCareReminderEnabled,
-                          "every_minute",
-                          "test_channel"                        
-                        );
-                      }  
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                    ),
-                    child: const Text(
-                      'Test Periodic Notifications',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     NotificationService notifService = NotificationService();
+                  //     bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
+                  //     if (permission) {
+                  //       notifService.showPeriodicNotification(
+                  //         2,
+                  //         "New Periodic Notification", 
+                  //         "Test Notification",
+                  //         context,
+                  //         isSelfCareReminderEnabled,
+                  //         "every_minute",
+                  //         "test_channel"                        
+                  //       );
+                  //     }  
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  //     backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                  //   ),
+                  //   child: const Text(
+                  //     'Test Periodic Notifications',
+                  //     style: TextStyle(fontSize: 20, color: Colors.white),
+                  //   ),
+                  // ),
                   // // --------------------------
                   // Test create notifications
-                  ElevatedButton(
-                    onPressed: () {
-                      // Now user user_id
-                      NotificationService NotifService = NotificationService();
-                      NotifService.createNotifications(
-                        //id: 1, 
-                        title: 'Test', 
-                        body: 'Test schedule notifications', 
-                        startTime: TimeOfDay.now(), 
-                        date: DateTime.now(), 
-                        context: context, 
-                        notifPermission: isSelfCareReminderEnabled, 
-                        intervalType: "daily"
-                      );
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // Now user user_id
+                  //     NotificationService NotifService = NotificationService();
+                  //     NotifService.createNotifications(
+                  //       //id: 1, 
+                  //       title: 'Test', 
+                  //       body: 'Test schedule notifications', 
+                  //       startTime: TimeOfDay.now(), 
+                  //       date: DateTime.now(), 
+                  //       context: context, 
+                  //       notifPermission: isSelfCareReminderEnabled, 
+                  //       intervalType: "daily"
+                  //     );
                     
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                    ),
-                    child: const Text(
-                      'Test create notifications',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
-
-                  ElevatedButton(
-                    onPressed: () {
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  //     backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                  //   ),
+                  //   child: const Text(
+                  //     'Test create notifications',
+                  //     style: TextStyle(fontSize: 20, color: Colors.white),
+                  //   ),
+                  // ),
+                  // Test cancel ALL notifications!
+                  // ElevatedButton(
+                  //   onPressed: () {
                       
-                      NotificationService().cancelAllNotifications();
+                  //     NotificationService().cancelAllNotifications();
                     
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                    ),
-                    child: const Text(
-                      'Test Cancel ALL Notifications',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  //     backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                  //   ),
+                  //   child: const Text(
+                  //     'Test Cancel ALL Notifications',
+                  //     style: TextStyle(fontSize: 20, color: Colors.white),
+                  //   ),
+                  // ),
 
                   ElevatedButton(
                     onPressed: () {

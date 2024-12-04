@@ -3,6 +3,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../backend/databaseRequests/notificationDBRequest.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 
 class NotificationService {
@@ -281,6 +283,61 @@ class NotificationService {
       time.hour,
       time.minute,
     );
+  }
+
+  // Format Date for db entry
+  String formatDateTime(DateTime selectedDate, TimeOfDay selectedTime, int offSetHours) {
+    // Combine selectedDate and selectedTime into a single DateTime
+    final combinedDateTime = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+
+    // Convert the DateTime to the ISO 8601 string with offset
+    // Adjust the DateTime for the desired offset
+    final offsetDateTime = combinedDateTime.add(Duration(hours: offSetHours));
+
+    // Format the DateTime to ISO 8601 without the native offset
+    final formattedDateTime = offsetDateTime.toUtc().toIso8601String();
+
+    // Manually append the offset in ISO 8601 format (e.g., -04:00)
+    final offsetSign = offSetHours.isNegative ? '-' : '+';
+    final absOffsetHours = offSetHours.abs();
+    final offsetString = '$offsetSign${absOffsetHours.toString().padLeft(2, '0')}:00';
+
+    return '${formattedDateTime.substring(0, 19)}.000$offsetString';
+  }
+
+  // Create DB Entry
+  Future<http.Response> createDBNotificationEntry({
+    required String userId,
+    required String title,
+    required String body,
+    required TimeOfDay startTime,
+    required DateTime startDate,
+    required String reminderType,
+    required String intervalType,
+    required int interval
+    }) async {
+    //Format jsonData
+    String formattedDate = formatDateTime(startDate, startTime, -4);
+    dynamic jsonData = {
+      "user_id": userId,
+      "title": title,
+      "body": body,
+      "start_datetime": formattedDate,
+      "reminder_type": "self_care",
+      "interval_type": intervalType,
+      "interval": interval
+    };
+
+    //create notification
+    http.Response response = await createDBNotification(userId, jsonData: jsonData);
+     
+    return response;
   }
 
   // This method will schedule all reminders for a given date
