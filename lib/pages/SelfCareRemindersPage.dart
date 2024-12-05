@@ -47,30 +47,34 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
     await _fetchUserReminders(userId);
     await checkActiveBaseNotifications();
     await setPending();
-    print(userId);
-    print(reminders);
+    // print(userId);
+    // print(reminders);
   }
 
   Future<void> checkActiveBaseNotifications() async {
     NotificationService notifService = NotificationService();
     List<PendingNotificationRequest> pendingNotifications = await notifService.getPendingNotifications(printOut: false);
     Set<String> pending = pendingNotifications.map((notification) => notification.title!).toSet();
-    if (pending.contains("Drink Water")) {
-      setState(() {
-        drinkWaterSelected = true;
-      });
+    if (isSelfCareReminderEnabled) {
+      if (pending.contains("Drink Water")) {
+        setState(() {
+          drinkWaterSelected = true;
+        });
+      }
+      if (pending.contains("Eat Something")) {
+        setState(() {
+          eatSomethingSelected = true;
+        });
+      }
+      if (pending.contains("Log your mood")) {
+        setState(() {
+          logMoodSelected = true;
+        });
+      }
+      pendingNotifs = pending;
+    } else {
+      notifService.cancelAllNotifications();
     }
-    if (pending.contains("Eat Something")) {
-      setState(() {
-        eatSomethingSelected = true;
-      });
-    }
-    if (pending.contains("Log your mood")) {
-      setState(() {
-        logMoodSelected = true;
-      });
-    }
-    pendingNotifs = pending;
   }
 
   Future<String?> getUserIdFromToken() async {
@@ -105,13 +109,15 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
   }
 
   Future<void> _fetchUserReminders(String? userId) async {
-    //print("---IM HERE---$userId");
     if (userId == null) { return; }
     http.Response response = await NotificationService().fetchUserNotifications(userId);
-    //print(response.body);
-    List<dynamic> remindersData = jsonDecode(response.body);
-    reminders = remindersData;
-    //print (remindersData.runtimeType);
+    dynamic responseBody = jsonDecode(response.body);
+    if (responseBody is List<dynamic>) {
+      List<dynamic> remindersData = responseBody;
+      reminders = remindersData;
+    } else if (responseBody is Map<String, dynamic> && responseBody.containsKey('message')){
+      reminders = null;
+    }
   }
 
   Future<void> _loadNotificationPermissions() async {
@@ -129,13 +135,72 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
     
   }
 
+  // Pop-up to see next scheduled instance
+  void showNextInstance( 
+    String title, 
+    DateTime startDate, 
+    String intervalType,
+    int interval 
+    ){
+    showDialog(
+      context: context, 
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text("${NotificationService().getNextInstanceOfNotification(
+            title, 
+            startDate, 
+            intervalType, 
+            interval
+          )} ")
+        );
+      }
+    );
+  }
+
+  // Pop-up to delete reminder
+  void showDeleteDialog(String userId, title) {
+    showDialog(
+      context: context, // Provide a BuildContext here
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Delete reminder?"),
+          content: const Text("Please confirm if you want to delete this reminder!"),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                NotificationService notifService = NotificationService();
+                await notifService.deleteDbNotificationEntry(userId, title);
+                // re-fetch reminders to refresh the page
+                await _fetchUserReminders(userId);
+                // Cancel existing pending notifications
+                await notifService.cancelNotificationsByTitle(title);
+                await setPending();
+                // Close the dialog and refresh
+                setState(() {});
+                
+              },
+              child: const Text("DELETE"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Custom card widget with a radio toggle on the right
   Widget buildSelfCareCard({
     required String title,
     required IconData icon,
     required bool isSelected,
     required ValueChanged<bool> onChanged,
-  }) {
+    required bool displayDelete,
+    required DateTime startDate,
+    required String intervalType,
+    required int interval,
+    VoidCallback? deleteCallback
+  }) { 
     return Card(
       color: Colors.white.withOpacity(0.9),
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -145,11 +210,51 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
           title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        trailing: Switch(
-          value: isSelected,
-          onChanged: onChanged,
-          activeColor: const Color.fromARGB(255, 92, 50, 129),
-        ),
+        trailing: displayDelete ? Row(
+          mainAxisSize: MainAxisSize.min, // Ensures the row is only as wide as its children
+          children: [
+            IconButton(
+              icon: const Icon(Icons.delete, color: Color.fromARGB(255, 105, 103, 103)),
+              onPressed: deleteCallback // Calls the delete callback
+            ),
+            IconButton(
+              icon: const Icon(Icons.schedule, color: Color.fromARGB(255, 54, 70, 244)),
+              onPressed: () {
+                showNextInstance(
+                  title,
+                  startDate,
+                  intervalType,
+                  interval
+                );
+              } 
+            ),
+            Switch(
+              value: isSelected,
+              onChanged: onChanged,
+              activeColor: const Color.fromARGB(255, 92, 50, 129),
+            ),
+          ],
+        ): Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.schedule, color: Color.fromARGB(255, 54, 70, 244)),
+              onPressed: () {
+                showNextInstance(
+                  title,
+                  startDate,
+                  intervalType,
+                  interval
+                );
+              } 
+            ),
+            Switch(
+              value: isSelected,
+              onChanged: onChanged,
+              activeColor: const Color.fromARGB(255, 92, 50, 129),
+            ),
+          ]
+        )
       ),
     );
   }
@@ -171,11 +276,15 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
               : Icons.keyboard_arrow_right, // Collapsed arrow
           color: const Color.fromARGB(255, 0, 0, 0),
         ),
-        onTap: () {
+        onTap: () async {
           if (userId != null) {
             setState(() {
               showNewReminderCard = !showNewReminderCard;
             });
+            if (showNewReminderCard) {
+              await _fetchUserReminders(userId);
+            }
+            setState(() {});
           } else {
             _showError("Please login to use this feature!");
           }
@@ -203,9 +312,16 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
               builder: (context) => CustomReminderSetupPage(),
             ),
           );
+          setState(() {
+              showNewReminderCard = false;
+          });
         },
       ),
     );
+  }
+
+  Duration timeOfDayToDuration(TimeOfDay timeOfDay) {
+    return Duration(hours: timeOfDay.hour, minutes: timeOfDay.minute);
   }
 
   Widget buildDBReminderCards(BuildContext context) {
@@ -215,19 +331,25 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
     return reminders != null ? 
     ListView(
       children: reminders!.map((reminder) {
+        NotificationService notifService = NotificationService();
         bool isSelected = customSelected[reminder['title']+"Selected"] = pendingNotifs != null ? pendingNotifs!.contains(reminder["title"]): false;
+        DateTime unformatedDate = notifService.unformatDate(reminder["start_datetime"])["DateTime"];
+        TimeOfDay unformatedTime = notifService.unformatDate(reminder["start_datetime"])["TimeOfDay"];
         return buildSelfCareCard(
           title: reminder["title"], 
           icon: Icons.alarm, 
           isSelected: isSelected,
+          displayDelete: true,
+          startDate: unformatedDate.add(timeOfDayToDuration(unformatedTime)),
+          intervalType: reminder["interval_type"],
+          interval: reminder["interval"],
+          deleteCallback: () => showDeleteDialog(reminder['user_id'], reminder['title']),
           onChanged: (value) async {
-              
-              NotificationService notifService = NotificationService();
               bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
               if (permission) {
                 if (value) {
-                  DateTime unformatedDate = notifService.unformatDate(reminder["start_datetime"])["DateTime"];
-                  TimeOfDay unformatedTime = notifService.unformatDate(reminder["start_datetime"])["TimeOfDay"];
+                  // DateTime unformatedDate = notifService.unformatDate(reminder["start_datetime"])["DateTime"];
+                  // TimeOfDay unformatedTime = notifService.unformatDate(reminder["start_datetime"])["TimeOfDay"];
                   // print(unformatedTime);
                   // print(unformatedDate);
                   await notifService.createNotifications( 
@@ -261,6 +383,12 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
     ) : const SizedBox(height: 1,);
   }
 
+  //helper method to get today at a specific hour
+  DateTime getTodayAt(int time) {
+    DateTime now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, time, 0, 0).add(Duration(hours: 4)); //account for offset
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -288,6 +416,10 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                     title: "Drink Water",
                     icon: Icons.local_drink,
                     isSelected: drinkWaterSelected,
+                    displayDelete: false,
+                    startDate: getTodayAt(7),
+                    intervalType: "hourly",
+                    interval: 3,
                     onChanged: (value) async {
                       NotificationService notifService = NotificationService();
                       bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
@@ -325,6 +457,10 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                     title: "Eat Something",
                     icon: Icons.fastfood,
                     isSelected: eatSomethingSelected,
+                    displayDelete: false,
+                    startDate: getTodayAt(7),
+                    intervalType: "hourly",
+                    interval: 5,
                     onChanged: (value) async {
                       NotificationService notifService = NotificationService();
                       bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
@@ -361,6 +497,10 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                     title: "Log your mood",
                     icon: Icons.menu_book,
                     isSelected: logMoodSelected,
+                    displayDelete: false,
+                    startDate: getTodayAt(19),
+                    intervalType: "daily",
+                    interval: 1,
                     onChanged: (value) async {
                       NotificationService notifService = NotificationService();
                       bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
@@ -396,9 +536,11 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                   ),
                   buildCustomRemindersCard(),
                   if (showNewReminderCard) buildNewReminderCard(context),
+                  
                   if (showNewReminderCard) Expanded(
                     child: buildDBReminderCards(context),
-                  ),                 
+                  ),
+                                   
 
 
                   // Notification Testing!------------------------------------------

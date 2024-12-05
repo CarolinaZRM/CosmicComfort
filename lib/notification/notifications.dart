@@ -414,6 +414,47 @@ class NotificationService {
     return response;
   }
 
+  // Delete DB notification Entry
+  Future<http.Response> deleteDbNotificationEntry(String userId, String title) async{
+    dynamic jsonData = {
+      "title": title
+    };
+    http.Response response = await deleteDBNotification(userId, jsonData: jsonData);
+    return response;
+  }
+
+  String getNextInstanceOfNotification(
+    String title, 
+    DateTime startDate, 
+    String intervalType,
+    int interval
+    ) {
+      // Map of duration multipliers
+      final Map<String, Duration> durationMap = {
+        'daily': Duration(days: interval),
+        'weekly': Duration(days: 7 * interval),
+        'hourly': Duration(hours: interval),
+        'monthly': Duration(days: 30 * interval), // Approximation
+      };
+
+      // Interval type validation
+      if (!durationMap.containsKey(intervalType)) {
+        throw ArgumentError('Invalid schedule type: $intervalType; must be "daily", "weekly", "hourly", or "monthly".');
+      }
+
+      DateTime nextInstance = startDate.subtract(Duration(hours: 4)); //account for offSet
+      print(nextInstance);
+      print(DateTime.now());
+      print(nextInstance.isBefore(DateTime.now()));
+      // Get the next instance by increasing duration till after the current time
+      while(nextInstance.isBefore(DateTime.now())){
+        nextInstance = nextInstance.add(durationMap[intervalType]!);
+        print(nextInstance);
+      }
+      return "Scheduled for: \n${nextInstance.toString()}";
+      
+  }
+
   // This method will schedule all reminders for a given date
   Future<void> createNotifications({
     //required int id, 
@@ -428,11 +469,7 @@ class NotificationService {
     }) async {
       // Check permissions
       bool permissions = await checkAndRequestExactAlarmPermission(context, showPopup: true);
-      if (!permissions) { return; }
-      
-      // if (id < 1) {
-      //   throw ArgumentError('Invalid id, must be 1 or greater!: $id');
-      // }
+      if (!permissions) { return; }      
 
       // Format Scheduled time:
       final localTimeZone = tz.getLocation('America/Puerto_Rico'); // lets use puerto rico time zone

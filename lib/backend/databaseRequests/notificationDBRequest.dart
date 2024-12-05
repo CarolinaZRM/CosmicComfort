@@ -35,6 +35,20 @@ Future<void> updateNotificationSettings(String userId, {bool? selfCarePerm, bool
   }
 }
 
+Future<http.Response> deleteDBNotification(String userId, {required dynamic jsonData}) async {
+  final response = await http.delete(
+    Uri.parse("$baseURL/reminders/user/$userId"),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode(jsonData),
+  );
+  if (response.statusCode == 200) {
+    print("Deleted reminder!");
+  } else {
+    print("${response.statusCode} Failed to delete reminder: ${response.body}");
+  }
+  return response;
+}
+
 Future<http.Response> createDBNotification(String userId, {required dynamic jsonData}) async {
   final response = await http.post(
     Uri.parse("$baseURL/reminders/"),
