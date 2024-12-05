@@ -670,21 +670,21 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                   //   ),
                   // ),
 
-                  ElevatedButton(
-                    onPressed: () {
+                  // ElevatedButton(
+                  //   onPressed: () {
                       
-                      NotificationService().getPendingNotifications(printOut: true);
+                  //     NotificationService().getPendingNotifications(printOut: true);
                     
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
-                    ),
-                    child: const Text(
-                      'Test Pending Notifications',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  //     backgroundColor: const Color.fromARGB(200, 69, 68, 121), // Button color
+                  //   ),
+                  //   child: const Text(
+                  //     'Test Pending Notifications',
+                  //     style: TextStyle(fontSize: 20, color: Colors.white),
+                  //   ),
+                  // ),
 
                 ],
               ),

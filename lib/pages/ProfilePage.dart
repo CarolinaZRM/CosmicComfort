@@ -8,6 +8,7 @@ import 'SignInPage.dart';
 import 'PasswordPage.dart';
 import 'UsernamePage.dart';
 import 'ProfilePicPage.dart';
+import '../notification/notifications.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -57,6 +58,7 @@ class _ProfilePageState extends State<ProfilePage>{
           context,
           MaterialPageRoute(builder: (context) => SignInPage()), (route) => false,
       );
+      NotificationService().cancelAllNotifications();
     } catch (e){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error logging out: $e ."))
