@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../pages/settings/TextIDPage.dart';
 import '../pages/InstructionsPage.dart';
 import '../notification/notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage({super.key});
@@ -13,24 +15,69 @@ class _SettingsPageState extends State<SettingsPage> {
   // State variables for notifications toggles
   bool isSelfCareReminderEnabled = false;
   bool isLogReminderEnabled = false;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
-    _loadNotificationPermissions();
+    _initialize();
+  }
+
+  Future<void> _initialize() async{
+    await _fetchUserId();
+    await _loadNotificationPermissions();
+  }
+
+  Future<String?> getUserIdFromToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('authToken');
+
+      if (token == null) return null;
+
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['id'];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+    );
+  }
+
+  Future<void> _fetchUserId() async {
+    String? fetchedUserId = await getUserIdFromToken();
+    if (fetchedUserId == null) {
+      //userId = "673d3790e3262ad583bced63";
+      //_showError("Please log in for full functionality of this page!");
+      return;
+    } else {
+      userId = fetchedUserId;
+    }
   }
 
   Future<void> _loadNotificationPermissions() async {
     // TODO: get user_id from loggedin user
-    final userId = "673d3790e3262ad583bced63"; // Replace with dynamic user ID retrieval
-    final data = await NotificationService().getNotificationPermisions(userId);
-    if (data != null) {
-      print('${data["self_care"]}, ${data["log_reminder"]}');
+    //final userId = "673d3790e3262ad583bced63"; // Replace with dynamic user ID retrieval
+    if (userId != null) {
+      final data = await NotificationService().getNotificationPermisions(userId!);
+      if (data != null) {
+        print('${data["self_care"]}, ${data["log_reminder"]}');
+        setState(() {
+          isSelfCareReminderEnabled = data["self_care"] ?? false;
+          
+        });
+      }
+    } else {
       setState(() {
-        isSelfCareReminderEnabled = data["self_care"] ?? false;
-        
+          isSelfCareReminderEnabled = false;
+          
       });
-    } 
+    }
+     
   }
   // State variables for Fake Chat Settings and Help dropdowns
   String selectedFakeChatOption = 'Text ID'; // Default selected option// Default selected option
@@ -116,13 +163,18 @@ class _SettingsPageState extends State<SettingsPage> {
           value: isSelfCareReminderEnabled,
           onChanged: (value) => setState(() {
             // TODO: get userId via login
-            String userId = "673d3790e3262ad583bced63";
-            NotificationService().updateNotificationPermissions(
-                        userId, 
+            //String userId = "673d3790e3262ad583bced63";
+            if (userId != null) {
+              NotificationService().updateNotificationPermissions(
+                        userId!, 
                         selfCarePerm: value,
                         
                       );
-            isSelfCareReminderEnabled = value;
+              isSelfCareReminderEnabled = value;
+            } else {
+              _showError("Please login to use this feature");
+            }
+            
             // unschedule notifications
             if (!value) {
               NotificationService().cancelAllNotifications();

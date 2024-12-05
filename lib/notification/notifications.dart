@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -31,14 +33,6 @@ class NotificationService {
       //onDidReceiveBackgroundNotificationResponse: onSelectNotification,
     );
 
-    // final androidPlugin = flutterLocalNotificationsPlugin
-    //     .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    // if (androidPlugin != null) {
-    //   final areNotificationsEnabled = await androidPlugin.areNotificationsEnabled();
-    //   if (areNotificationsEnabled == null || !areNotificationsEnabled) {
-    //     await androidPlugin.requestNotificationsPermission();
-    //   }
-    // }
     requestAndroidPermissions();
 
     requestIOSPermissions();
@@ -285,6 +279,80 @@ class NotificationService {
     );
   }
 
+  // Helper method to unformat the date
+  List<String> dateParts(String formattedDate) {
+    String time;
+    String offset;
+    // Extract the date part before "T"
+    String date = formattedDate.split("T")[0];
+
+    if (formattedDate.contains("+")) { //offset is positive
+      // Extract the time part between "T" and "+/-"
+      time = formattedDate.split("T")[1].split("+")[0];
+
+    } else { // if (formattedDate.contains("-")) { //offset if negative
+      // Extract the time part between "T" and "+/-"
+      time = formattedDate.split("T")[1].split("-")[0];
+
+    }
+    // Extract the offset
+    if (formattedDate.contains("+")) {
+      offset = "+${formattedDate.split("T")[1].split("+")[1]}";
+    } else if (formattedDate.contains("-")) {
+      offset = "-${formattedDate.split("T")[1].split("-")[1]}";
+    } else {
+      offset = "+00:00"; // Default offset if not found
+    }
+    
+
+    // Return the results as a List<String>
+    print([date, time, offset]);
+    return [date, time, offset];
+  }
+
+  // Helper method to unformat the date
+  Map<String, dynamic> processDateTime(List<String> dateTimeParts) {
+    // Extract components
+    String datePart = dateTimeParts[0];
+    String timePart = dateTimeParts[1];
+    String offsetPart = dateTimeParts[2];
+
+    // Parse DateTime
+    DateTime dateTime = DateTime.parse('$datePart 00:00:00.000');
+
+    // Parse TimeOfDay
+    List<String> timeComponents = timePart.split(":");
+    TimeOfDay timeOfDay = TimeOfDay(
+      hour: int.parse(timeComponents[0]),
+      minute: int.parse(timeComponents[1]),
+    );
+    //print("I GOT HERE------------\n$datePart,$timePart,$offsetPart");
+    // Parse offset
+    bool isPositive = offsetPart.startsWith("+");
+    List<String> offsetComponents = offsetPart.substring(1).split(":");
+    Duration offsetDuration = Duration(
+      hours: int.parse(offsetComponents[0]),
+      minutes: int.parse(offsetComponents[1]),
+    );
+
+    // Adjust DateTime for offset
+    dateTime = isPositive
+        ? dateTime.subtract(offsetDuration)
+        : dateTime.add(offsetDuration);
+
+    return {
+      "DateTime": dateTime,
+      "TimeOfDay": timeOfDay,
+    };
+  }
+
+  Map<String, dynamic> unformatDate(String formattedDate) {
+    // Extract parts
+    List<String> splitDate = dateParts(formattedDate);
+    // unformat date into DateTime and TimeOfDay
+    return processDateTime(splitDate);
+  }
+
   // Format Date for db entry
   String formatDateTime(DateTime selectedDate, TimeOfDay selectedTime, int offSetHours) {
     // Combine selectedDate and selectedTime into a single DateTime
@@ -295,6 +363,7 @@ class NotificationService {
       selectedTime.hour,
       selectedTime.minute,
     );
+  
 
     // Convert the DateTime to the ISO 8601 string with offset
     // Adjust the DateTime for the desired offset
@@ -309,6 +378,11 @@ class NotificationService {
     final offsetString = '$offsetSign${absOffsetHours.toString().padLeft(2, '0')}:00';
 
     return '${formattedDateTime.substring(0, 19)}.000$offsetString';
+  }
+
+  Future<http.Response> fetchUserNotifications(UserId) async {
+    http.Response response = await getUserNotifications(UserId);
+    return response;
   }
 
   // Create DB Entry
@@ -333,10 +407,10 @@ class NotificationService {
       "interval_type": intervalType,
       "interval": interval
     };
-
+    //print("$formattedDate");
     //create notification
     http.Response response = await createDBNotification(userId, jsonData: jsonData);
-     
+    //print("LOOK HERE-------------${jsonDecode(response.body)["start_datetime"]}");
     return response;
   }
 
@@ -424,7 +498,7 @@ class NotificationService {
       print("finished!");
   }
 
-  void cancelNotificationsByTitle(String title) async {
+  Future<void> cancelNotificationsByTitle(String title) async {
     List<PendingNotificationRequest> pendingNotifications = await getPendingNotifications(printOut: false);
     for (var notification in pendingNotifications) {
       if (notification.title == title) {

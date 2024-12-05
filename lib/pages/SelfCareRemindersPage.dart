@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import '../components/GenericComponents.dart' as components;
 import 'CustomReminderSetupPage.dart';
 import '../notification/notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:http/http.dart' as http;
 
 class SelfCareRemindersPage extends StatefulWidget {
   const SelfCareRemindersPage({Key? key}) : super(key: key);
@@ -13,28 +18,115 @@ class SelfCareRemindersPage extends StatefulWidget {
 class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
   bool drinkWaterSelected = false;
   bool eatSomethingSelected = false;
-  bool takeMedicationSelected = false;
+  bool logMoodSelected = false;
   bool showNewReminderCard = false;
   bool isSelfCareReminderEnabled = false;
+  List<dynamic>? reminders;
+  Set<String>? pendingNotifs;
+  String? userId;
+  Map<String, bool> customSelected = {};
 
   @override
   void initState() {
     super.initState();
-    _loadNotificationPermissions();
+    _initialize();
+  }
+
+  Future<void> setPending() async {
+    List<PendingNotificationRequest> pendingNotifications = await NotificationService().getPendingNotifications(printOut: false);
+    Set<String> pending = pendingNotifications.map((notification) => notification.title!).toSet();
+    setState(() {
+      pendingNotifs = pending;
+    });
+  }
+
+  // Prepare and initialize the page variables and data
+  Future<void> _initialize() async {
+    await _fetchUserId();
+    await _loadNotificationPermissions();
+    await _fetchUserReminders(userId);
+    await checkActiveBaseNotifications();
+    await setPending();
+    print(userId);
+    print(reminders);
+  }
+
+  Future<void> checkActiveBaseNotifications() async {
+    NotificationService notifService = NotificationService();
+    List<PendingNotificationRequest> pendingNotifications = await notifService.getPendingNotifications(printOut: false);
+    Set<String> pending = pendingNotifications.map((notification) => notification.title!).toSet();
+    if (pending.contains("Drink Water")) {
+      setState(() {
+        drinkWaterSelected = true;
+      });
+    }
+    if (pending.contains("Eat Something")) {
+      setState(() {
+        eatSomethingSelected = true;
+      });
+    }
+    if (pending.contains("Log your mood")) {
+      setState(() {
+        logMoodSelected = true;
+      });
+    }
+    pendingNotifs = pending;
+  }
+
+  Future<String?> getUserIdFromToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('authToken');
+
+      if (token == null) return null;
+
+      final decodedToken = JwtDecoder.decode(token);
+      return decodedToken['id'];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+    );
+  }
+
+  Future<void> _fetchUserId() async {
+    String? fetchedUserId = await getUserIdFromToken();
+    if (fetchedUserId == null) {
+      // userId = "673d3790e3262ad583bced63";
+      // _showError("User ID not found. Please log in again. defaulted to: 673d3790e3262ad583bced63");
+      return;
+    } else {
+      userId = fetchedUserId;
+    }
+  }
+
+  Future<void> _fetchUserReminders(String? userId) async {
+    //print("---IM HERE---$userId");
+    if (userId == null) { return; }
+    http.Response response = await NotificationService().fetchUserNotifications(userId);
+    //print(response.body);
+    List<dynamic> remindersData = jsonDecode(response.body);
+    reminders = remindersData;
+    //print (remindersData.runtimeType);
   }
 
   Future<void> _loadNotificationPermissions() async {
     // TODO: get user_id from loggedin user
-    final userId = "673d3790e3262ad583bced63"; // Replace with dynamic user ID retrieval
-    final data = await NotificationService().getNotificationPermisions(userId);
-    
-
-    if (data != null) {
-      print('${data["self_care"]}, ${data["log_reminder"]}');
-      setState(() {
-        isSelfCareReminderEnabled = data["self_care"] ?? false;
-      });
+    //final userId = "673d3790e3262ad583bced63"; // Replace with dynamic user ID retrieval
+    if (userId != null) {
+      final data = await NotificationService().getNotificationPermisions(userId!);
+      if (data != null) {
+        //print('${data["self_care"]}, ${data["log_reminder"]}');
+        setState(() {
+          isSelfCareReminderEnabled = data["self_care"] ?? false;
+        });
+      }
     }
+    
   }
 
   // Custom card widget with a radio toggle on the right
@@ -80,9 +172,14 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
           color: const Color.fromARGB(255, 0, 0, 0),
         ),
         onTap: () {
-          setState(() {
-            showNewReminderCard = !showNewReminderCard;
-          });
+          if (userId != null) {
+            setState(() {
+              showNewReminderCard = !showNewReminderCard;
+            });
+          } else {
+            _showError("Please login to use this feature!");
+          }
+          
         },
       ),
     );
@@ -109,6 +206,59 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
         },
       ),
     );
+  }
+
+  Widget buildDBReminderCards(BuildContext context) {
+    // NotificationService notifService = NotificationService();
+    // List<PendingNotificationRequest> pendingNotifications = await notifService.getPendingNotifications(printOut: false);
+    // Set<String> pending = pendingNotifications.map((notification) => notification.title!).toSet();
+    return reminders != null ? 
+    ListView(
+      children: reminders!.map((reminder) {
+        bool isSelected = customSelected[reminder['title']+"Selected"] = pendingNotifs != null ? pendingNotifs!.contains(reminder["title"]): false;
+        return buildSelfCareCard(
+          title: reminder["title"], 
+          icon: Icons.alarm, 
+          isSelected: isSelected,
+          onChanged: (value) async {
+              
+              NotificationService notifService = NotificationService();
+              bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
+              if (permission) {
+                if (value) {
+                  DateTime unformatedDate = notifService.unformatDate(reminder["start_datetime"])["DateTime"];
+                  TimeOfDay unformatedTime = notifService.unformatDate(reminder["start_datetime"])["TimeOfDay"];
+                  // print(unformatedTime);
+                  // print(unformatedDate);
+                  await notifService.createNotifications( 
+                    title: reminder["title"], 
+                    body: reminder["title"], 
+                    startTime: unformatedTime,
+                    date: unformatedDate, 
+                    context: context, 
+                    notifPermission: isSelfCareReminderEnabled, 
+                    intervalType: reminder["interval_type"],
+                    interval: reminder["interval"]
+                  );
+                  await setPending();
+                } else {
+                  // Cancel custom notifications
+                  await notifService.cancelNotificationsByTitle(reminder["title"]);
+                  await setPending();
+                }
+                if (isSelfCareReminderEnabled){
+                  setState(() {
+                    isSelected = value;
+                  });
+                } else {
+                  _showError("Enable 'selfcare reminders' in settings!");
+                }
+                
+              }
+            },
+          );
+      }).toList(),
+    ) : const SizedBox(height: 1,);
   }
 
   @override
@@ -154,15 +304,20 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                             intervalType: "hourly",
                             interval: 3
                           );
-
+                          setPending();
                         } else {
                           // Cancel "Drink Water" notifications
                           notifService.cancelNotificationsByTitle("Drink Water");
+                          setPending();
+                        }
+                        if (isSelfCareReminderEnabled){
+                          setState(() {
+                            drinkWaterSelected = value;
+                          });
+                        } else {
+                          _showError("Enable 'selfcare reminders' in settings!");
                         }
                         
-                        setState(() {
-                          drinkWaterSelected = value;
-                        });
                       }
                     },
                   ),
@@ -186,21 +341,26 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                             intervalType: "hourly",
                             interval: 5
                           );
-
+                          setPending();
                         } else {
                           // Cancel "Eat Something" notifications
                           notifService.cancelNotificationsByTitle("Eat Something");
+                          setPending();
                         }
-                        setState(() {
-                          eatSomethingSelected = value;
-                        });
+                        if (isSelfCareReminderEnabled){
+                          setState(() {
+                            eatSomethingSelected = value;
+                          });
+                        } else {
+                          _showError("Enable 'selfcare reminders' in settings!");
+                        }
                       }
                     },
                   ),
                   buildSelfCareCard(
                     title: "Log your mood",
                     icon: Icons.menu_book,
-                    isSelected: takeMedicationSelected,
+                    isSelected: logMoodSelected,
                     onChanged: (value) async {
                       NotificationService notifService = NotificationService();
                       bool permission = await notifService.checkAndRequestExactAlarmPermission(context, showPopup: true);
@@ -218,19 +378,27 @@ class _SelfCareRemindersPageState extends State<SelfCareRemindersPage> {
                             intervalType: "daily",
                             interval: 1
                           );
-
+                          setPending();
                         } else {
                           // Cancel "Log your mood" notifications
                           notifService.cancelNotificationsByTitle("Log your mood");
+                          setPending();
                         }
-                        setState(() {
-                          takeMedicationSelected = value;
-                        });
+                        if (isSelfCareReminderEnabled){
+                          setState(() {
+                            logMoodSelected = value;
+                          });
+                        } else {
+                          _showError("Enable 'selfcare reminders' in settings!");
+                        }
                       }
                     },
                   ),
                   buildCustomRemindersCard(),
                   if (showNewReminderCard) buildNewReminderCard(context),
+                  if (showNewReminderCard) Expanded(
+                    child: buildDBReminderCards(context),
+                  ),                 
 
 
                   // Notification Testing!------------------------------------------
