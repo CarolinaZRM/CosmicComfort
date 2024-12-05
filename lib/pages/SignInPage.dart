@@ -51,7 +51,7 @@ class SignInPage extends StatelessWidget {
         // Send user to home page after successful login
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MyApp()),
+          MaterialPageRoute(builder: (context) => const MyHomePage()),
         );
 
         fetchProtectedData(context);
@@ -123,8 +123,16 @@ class SignInPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
-                components.buildHeader(title: "Sign In", context: context),
+                const Center(
+                  child: Text(
+                  "Sign In",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                ),
                 
                 const SizedBox(height: 85), // Space below the title
                 
@@ -172,7 +180,6 @@ class SignInPage extends StatelessWidget {
                         // Sign In Button
                         ElevatedButton(
                           onPressed: () {
-                            // TODO: Handle sign-in logic
                             logUserIn(
                               usernameController.text.trim(),
                               passwordController.text.trim(),
@@ -207,11 +214,11 @@ class SignInPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                components.buildPageRedirectCard(
-                  icon: Icons.abc_outlined,
-                  title: "Temp Profile view when already logged in", 
-                  context: context, 
-                  page: ProfilePage())
+                // components.buildPageRedirectCard(
+                //   icon: Icons.abc_outlined,
+                //   title: "Temp Profile view when already logged in", 
+                //   context: context, 
+                //   page: ProfilePage())
               ],
             ),
           )

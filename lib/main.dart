@@ -11,7 +11,7 @@ import 'pages/BreathingPage.dart';
 import 'pages/CalendarPage.dart';
 import 'pages/SelfCareRemindersPage.dart';
 import 'pages/SignInPage.dart';
-import 'pages/SignUpPage.dart';
+import 'pages/ProfilePage.dart';
 import './notification/notifications.dart';
 
 void main() async{
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: SignInPage(),
     );
   }
 }
@@ -264,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         //Navigate User profile
                         Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => SignInPage()),
+                            MaterialPageRoute(builder: (context) => ProfilePage()),
                           );
                       },
                     ),
