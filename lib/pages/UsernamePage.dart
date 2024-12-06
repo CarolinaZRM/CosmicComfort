@@ -54,7 +54,7 @@ class UsernameChangePage extends StatelessWidget {
       // Make API call to update the username in the database
       try {
         final response = await http.patch(
-          Uri.parse('http://localhost:3000/user/update-username/$userID'),
+          Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/update-username/$userID'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token'

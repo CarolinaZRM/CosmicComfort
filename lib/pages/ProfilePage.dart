@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage>{
 
     try{
         final response = await http.get(
-        Uri.parse("http://localhost:3000/user/$userID"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/$userID"),
         headers: {
           "Content-Type": "application/json",
           'Authorization': "Bearer $token",
@@ -155,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage>{
 
     try {
       final response = await http.get(
-        Uri.parse("http://localhost:3000/user/$userId"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/$userId"),
         headers: {'Authorization': 'Bearer $token'},
       );
 

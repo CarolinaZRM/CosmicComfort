@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../components/GenericComponents.dart' as components;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'SignUpPage.dart';
-import 'ProfilePage.dart';
 import '../main.dart';
 
 class SignInPage extends StatelessWidget {
@@ -26,7 +24,7 @@ class SignInPage extends StatelessWidget {
     try{
       // Call Backend API to Save Data in MongoDB
       final response = await http.post(
-        Uri.parse("http://localhost:3000/user/login"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/login"),
         //Uri.parse("http://127.0.0.1:3000/user/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
@@ -78,7 +76,7 @@ class SignInPage extends StatelessWidget {
       }
 
       final response = await http.get(
-      Uri.parse('http://localhost:3000/user/protected-route'),
+      Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/protected-route'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -214,11 +212,6 @@ class SignInPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                // components.buildPageRedirectCard(
-                //   icon: Icons.abc_outlined,
-                //   title: "Temp Profile view when already logged in", 
-                //   context: context, 
-                //   page: ProfilePage())
               ],
             ),
           )

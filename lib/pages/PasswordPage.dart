@@ -50,7 +50,7 @@ class PasswordChangePage extends StatelessWidget {
     try {
       // Make API call to update the password in the database
       final response = await http.patch(
-        Uri.parse('http://localhost:3000/user/update-password/$userId'),
+        Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/update-password/$userId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

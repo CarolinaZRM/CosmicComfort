@@ -139,7 +139,7 @@ Future<void> testUpdateProfilePicture(BuildContext context, String selectedPath)
     try {
       //
       final response = await http.patch(
-      Uri.parse('http://localhost:3000/user/update-profpic/$userId'),
+      Uri.parse('https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/update-profpic/$userId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -255,8 +255,7 @@ Future <void> defaultUserSettings(String userID, BuildContext context) async {
     // -------- Account Settings ----------
     try {
       final accSettingsResponse = await http.post(
-        Uri.parse("http://localhost:3000/account_settings/"),
-        //Uri.parse("http://127.0.0.1:3000/user/"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/account_settings/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "user_id": userID,
@@ -280,8 +279,7 @@ Future <void> defaultUserSettings(String userID, BuildContext context) async {
     // -------- Calendar ----------
     try {
       final calendarResponse = await http.post(
-        Uri.parse("http://localhost:3000/calendar/"),
-        //Uri.parse("http://127.0.0.1:3000/user/"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/calendar/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "user_id": userID,
@@ -312,8 +310,7 @@ Future <void> defaultUserSettings(String userID, BuildContext context) async {
     // -------- Fake Call ----------
     try {
       final fakeCallResponse = await http.post(
-        Uri.parse("http://localhost:3000/fake_call"),
-        //Uri.parse("http://127.0.0.1:3000/user/"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/fake_call"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "user_id": userID,

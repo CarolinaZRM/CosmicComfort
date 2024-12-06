@@ -13,8 +13,7 @@ class SignUpPage extends StatelessWidget {
       // Call Backend API to Save Data in MongoDB
       final response = await http.post(
         //Uri.parse("http://<your-backend-url>/register"),
-        Uri.parse("http://localhost:3000/user/"),
-        //Uri.parse("http://127.0.0.1:3000/user/"),
+        Uri.parse("https://cosmiccomfort-8656a323f8dc.herokuapp.com/user/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "username": username,
