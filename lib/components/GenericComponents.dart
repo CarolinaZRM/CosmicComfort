@@ -318,7 +318,7 @@ Future <void> defaultUserSettings(String userID, BuildContext context) async {
           "call_time": 5,
           "ringtone": true, 
           "ring_name": "sounds/CuteRingtone.mp3",
-          "profile_picture": "assets/austronaut.jpg",
+          "profile_picture": "assets/astronaut.jpg",
         }),
       );
       if (fakeCallResponse.statusCode == 201) {
